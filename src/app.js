@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors');
 const userRouter = require('./routes/userRouter');
+const quizRouter = require('./routes/quizRouter');
 
 const { notFoundHandler, errorHandler } = require('./middlewares/errorHandler');
 const mongoose = require('mongoose');
@@ -42,6 +43,7 @@ app.use(cors(
 
 //initilizing API routes
 app.use('/api/users', userRouter);
+app.use('/api/quiz', quizRouter);
 
 //testing API is alive
 app.get('/test', (req, res) => {
