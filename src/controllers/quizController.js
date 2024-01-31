@@ -1,5 +1,7 @@
 const { Quiz } = require("../models/Quiz");
-const { addQuiz, updateQuestion, getAllQuizs, getSingleQuiz, getAnswerQuestion } = require("../services/QuizService");
+const User = require("../models/User");
+const UserResponse = require("../models/UserResponses");
+const { addQuiz, updateQuestion, getAllQuizs, getSingleQuiz, getAnswerQuestion, getUserScores, getManager, getManagerWiseScores, getUserLeaderboard, getManagerLeaderboard } = require("../services/QuizService");
 const catchAsync = require("../utils/catchAsync");
 const sendResponse = require("../utils/sendResponse");
 
@@ -35,43 +37,39 @@ const singleQuiz = catchAsync(async (req, res) => {
 
 // Answer a question in a quiz
 const answerQuestion = catchAsync(async (req, res) => {
-    const result = await getAnswerQuestion(req.params)
+    const result = await getAnswerQuestion(req.params, req.user)
     sendResponse(res, { statusCode: 200, data: result, message: result.text, success: true })
 })
-// const answerQuestion = async (req, res) => {
-//     try {
-//         const { quizId, questionId, answerIndex } = req.params;
 
-//         console.log("quizId", quizId, "questionId", questionId, "answerIndex", answerIndex)
+// User scores
+const userScores = catchAsync(async (req, res) => {
+    const result = await getUserScores(req.params.userId)
+    sendResponse(res, { statusCode: 200, data: result, message: "User Scores Retrieve successfully", success: true })
+})
 
-//         // Assuming answerIndex is the index of the selected answer in the array
+// Manager scores
+const managerScores = catchAsync(async (req, res) => {
+    const result = await getManager(req.params.managerId)
+    sendResponse(res, { statusCode: 200, data: result, message: "Manager Scores Retrieve successfully", success: true })
+})
 
-//         const quiz = await Quiz.findById(quizId);
-//         console.log("quiz", quiz)
-//         if (!quiz) {
-//             return res.status(404).json({ error: 'Quiz not found' });
-//         }
+// Manager Wise scores
+const managerWiseScores = catchAsync(async (req, res) => {
+    const result = await getManagerWiseScores(req.params.managerId)
+    sendResponse(res, { statusCode: 200, data: result, message: "Manager Wise Scores Retrieve successfully", success: true })
+})
 
-//         const question = quiz.questions.id(questionId);
-//         console.log("question", question)
-//         if (!question) {
-//             return res.status(404).json({ error: 'Question not found' });
-//         }
+// User Leaderboard
+const userLeaderboard = catchAsync(async (req, res) => {
+    const result = await getUserLeaderboard()
+    sendResponse(res, { statusCode: 200, data: result, message: "User Leaderboard Retrieve successfully", success: true })
+})
 
-//         // Assuming answerIndex is within the bounds of the answers array
-//         const selectedAnswer = question.answers[answerIndex];
-//         console.log("selectedAnswer", selectedAnswer)
-//         if (!selectedAnswer) {
-//             return res.status(400).json({ error: 'Invalid answer index' });
-//         }
+// Manager Leaderboard
+const managerLeaderboard = catchAsync(async (req, res) => {
+    const result = await getManagerLeaderboard(req.params.managerId)
+    sendResponse(res, { statusCode: 200, data: result, message: "Manager Leaderboard Retrieve successfully", success: true })
+})
 
-//         // You can implement scoring logic here based on selectedAnswer.isCorrect
 
-//         res.status(200).json({ message: 'Answer submitted successfully', data: selectedAnswer });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// };
-
-module.exports = { createQuiz, getAllQuizzes, singleQuiz, answerQuestion, updateQuiz };
+module.exports = { createQuiz, getAllQuizzes, singleQuiz, answerQuestion, updateQuiz, userScores, managerScores, managerWiseScores, userLeaderboard, managerLeaderboard };
