@@ -13,7 +13,7 @@ router.put('/quizzes/:id', auth('manager'), updateQuiz);
 router.get('/user-leaderboard', auth('manager', 'user'), userLeaderboard)
 
 // Manager leaderboard
-router.get('/user-leaderboard/:managerId', auth('manager', 'user'), managerLeaderboard)
+router.get('/manager-leaderboard/:managerId', auth('manager', 'user'), managerLeaderboard)
 
 // Get all quizzes
 router.get('/quizzes', auth('manager', 'user'), getAllQuizzes);

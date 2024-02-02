@@ -144,7 +144,7 @@ const getManagerLeaderboard = async (managerId) => {
     // Calculate total scores for each user
     const leaderboard = await Promise.all(
         distinctUserIds.map(async (userId) => {
-            const userScores = await UserResponse.find({ userId, managerId });
+            const userScores = await UserResponse.find({ userId, managerId }).populate('userId');
             const totalScore = userScores.reduce((sum, response) => sum + response.score, 0);
             return { userId, totalScore };
         })
@@ -154,10 +154,22 @@ const getManagerLeaderboard = async (managerId) => {
     const sortedLeaderboard = leaderboard.sort((a, b) => b.totalScore - a.totalScore);
 
     // Add rankings to the sorted leaderboard
-    const rankedLeaderboard = sortedLeaderboard.map((user, index) => ({
-        rank: index + 1,
-        ...user,
-    }));
+    // const rankedLeaderboard = sortedLeaderboard.map((user, index) => ({
+    //     rank: index + 1,
+    //     ...user,
+    // }));
+    const rankedLeaderboard = await Promise.all(
+        sortedLeaderboard.map(async (user, index) => {
+            const populatedUser = await User.findById(user.userId);
+            return {
+                rank: index + 1,
+                ...user,
+                userDetails: populatedUser, // Include populated user details in the result
+            };
+        })
+    );
+
+
 
     return rankedLeaderboard;
 }

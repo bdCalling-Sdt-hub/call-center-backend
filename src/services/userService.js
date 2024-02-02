@@ -60,6 +60,11 @@ const userSignIn = async (userBody) => {
   return { user, accessToken };
 }
 
+const getProfile = async (id) => {
+  const result = await User.findById(id);
+  return result;
+}
+
 const updateUser = async (userBody, file) => {
 
   const { name, userName, email } = userBody;
@@ -116,6 +121,7 @@ module.exports = {
   addUser,
   addManager,
   userSignIn,
+  getProfile,
   updateUser,
   getAllUsers,
   getSingleUser

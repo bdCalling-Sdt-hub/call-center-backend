@@ -1,5 +1,5 @@
 const express = require('express');
-const { signUp, createManager, signIn, updateProfile, allUsers, singleUser } = require('../controllers/userController');
+const { signUp, createManager, signIn, updateProfile, allUsers, singleUser, profile } = require('../controllers/userController');
 const router = express.Router();
 const fs = require('fs');
 const userFileUploadMiddleware = require("../middlewares/fileUpload");
@@ -27,6 +27,7 @@ router.post('/sign-up', auth('manager'), signUp);
 router.post('/create-manager', createManager);
 router.post('/sign-in', signIn);
 router.get('/', auth('manager'), allUsers);
+router.get('/profile', auth('manager', 'user'), profile);
 router.get('/:id', auth('manager', 'user'), singleUser);
 router.put('/', [uploadUsers.single("image")], updateProfile);
 
