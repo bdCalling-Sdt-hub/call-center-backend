@@ -3,7 +3,7 @@ const response = require("../helpers/response");
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const unlinkImage = require('../common/image/unlinkImage')
-const { addUser, userSignIn, addManager, getUserByEmail, getAllUsers, getUserById, updateUser, loginWithPasscode, getSingleUser } = require('../services/userService')
+const { addUser, userSignIn, addManager, getUserByEmail, getAllUsers, getUserById, updateUser, loginWithPasscode, getSingleUser, getProfile } = require('../services/userService')
 const User = require('../models/User');
 const sendResponse = require('../utils/sendResponse');
 const catchAsync = require('../utils/catchAsync');
@@ -30,6 +30,13 @@ const signIn = catchAsync(async (req, res) => {
     sendResponse(res, { statusCode: 200, data: result, message: 'Sign In successfully', success: true })
 });
 
+const profile = catchAsync(async (req, res) => {
+    const id = req.user.userId;
+    const result = await getProfile(id)
+
+    sendResponse(res, { statusCode: 200, data: result, message: 'User Profile successfully', success: true })
+});
+
 const updateProfile = catchAsync(async (req, res) => {
     const file = req.file;
     const result = await updateUser(req.body, { file })
@@ -47,4 +54,4 @@ const singleUser = catchAsync(async (req, res) => {
 })
 
 
-module.exports = { signUp, signIn, updateProfile, createManager, allUsers, singleUser }
+module.exports = { signUp, signIn, updateProfile, profile, createManager, allUsers, singleUser }
