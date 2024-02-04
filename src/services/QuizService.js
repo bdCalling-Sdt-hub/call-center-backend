@@ -38,6 +38,21 @@ const getSingleQuiz = async (id) => {
     return result
 }
 
+const getSingleQuestion = async (id) => {
+    const results = await Quiz.find({});
+
+    let question;
+    // Loop through each result
+    for (const result of results) {
+        // Find the question with the matching _id
+        question = result?.questions?.find(question => question?._id == id);
+
+        if (question) {
+            return question;
+        }
+    }
+}
+
 const getAnswerQuestion = async (quizBody, loginUser) => {
     const { quizId, questionId, answerIndex } = quizBody;
     const { userId } = loginUser;
@@ -180,6 +195,7 @@ module.exports = {
     updateQuestion,
     getAllQuizs,
     getSingleQuiz,
+    getSingleQuestion,
     getAnswerQuestion,
     getUserScores,
     getManager,

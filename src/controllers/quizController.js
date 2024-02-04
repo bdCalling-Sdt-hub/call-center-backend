@@ -1,7 +1,7 @@
 const { Quiz } = require("../models/Quiz");
 const User = require("../models/User");
 const UserResponse = require("../models/UserResponses");
-const { addQuiz, updateQuestion, getAllQuizs, getSingleQuiz, getAnswerQuestion, getUserScores, getManager, getManagerWiseScores, getUserLeaderboard, getManagerLeaderboard } = require("../services/QuizService");
+const { addQuiz, updateQuestion, getAllQuizs, getSingleQuiz, getAnswerQuestion, getUserScores, getManager, getManagerWiseScores, getUserLeaderboard, getManagerLeaderboard, getSingleQuestion } = require("../services/QuizService");
 const catchAsync = require("../utils/catchAsync");
 const sendResponse = require("../utils/sendResponse");
 
@@ -33,6 +33,12 @@ const getAllQuizzes = catchAsync(async (req, res) => {
 const singleQuiz = catchAsync(async (req, res) => {
     const result = await getSingleQuiz(req.params.id)
     sendResponse(res, { statusCode: 200, data: result, message: 'Quiz Retrieve successfully', success: true })
+})
+
+// Get single question
+const singleQuestion = catchAsync(async (req, res) => {
+    const result = await getSingleQuestion(req.params.id)
+    sendResponse(res, { statusCode: 200, data: result, message: 'Question Retrieve successfully', success: true })
 })
 
 // Answer a question in a quiz
@@ -72,4 +78,4 @@ const managerLeaderboard = catchAsync(async (req, res) => {
 })
 
 
-module.exports = { createQuiz, getAllQuizzes, singleQuiz, answerQuestion, updateQuiz, userScores, managerScores, managerWiseScores, userLeaderboard, managerLeaderboard };
+module.exports = { createQuiz, getAllQuizzes, singleQuiz, singleQuestion, answerQuestion, updateQuiz, userScores, managerScores, managerWiseScores, userLeaderboard, managerLeaderboard };

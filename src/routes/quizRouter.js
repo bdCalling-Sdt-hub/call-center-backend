@@ -1,10 +1,10 @@
 const express = require('express');
-const { getAllQuizzes, answerQuestion, updateQuiz, createQuiz, singleQuiz, userScores, managerScores, managerWiseScores, userLeaderboard, managerLeaderboard } = require('../controllers/quizController');
+const { getAllQuizzes, answerQuestion, updateQuiz, createQuiz, singleQuiz, userScores, managerScores, managerWiseScores, userLeaderboard, managerLeaderboard, singleQuestion } = require('../controllers/quizController');
 const auth = require('../middlewares/auth');
 const router = express.Router();
 
 // Create a new quiz
-router.post('/quizzes', auth('manager'), createQuiz);
+router.post('/', auth('manager'), createQuiz);
 
 // Update Quizzes
 router.put('/quizzes/:id', auth('manager'), updateQuiz);
@@ -16,13 +16,16 @@ router.get('/user-leaderboard', auth('manager', 'user'), userLeaderboard)
 router.get('/manager-leaderboard/:managerId', auth('manager', 'user'), managerLeaderboard)
 
 // Get all quizzes
-router.get('/quizzes', auth('manager', 'user'), getAllQuizzes);
+router.get('/', auth('manager', 'user'), getAllQuizzes);
 
 // Get single quizzes
 router.get('/:id', auth('manager', 'user'), singleQuiz);
 
+// Get single qus
+router.get('/question/:id', auth('manager', 'user'), singleQuestion);
+
 // Answer a question in a quiz
-router.post('/quizzes/:quizId/questions/:questionId/answer/:answerIndex', auth('manager', 'user'), answerQuestion);
+router.post('/quizzes/:quizId/:questionId/:answerIndex', auth('manager', 'user'), answerQuestion);
 
 // Endpoint to get user-wise scores
 router.get('/user-scores/:userId', auth('manager', 'user'), userScores);
