@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllQuizzes, answerQuestion, updateQuiz, createQuiz, singleQuiz, userScores, managerScores, managerWiseScores, userLeaderboard, managerLeaderboard, singleQuestion } = require('../controllers/quizController');
+const { getAllQuizzes, answerQuestion, updateQuiz, createQuiz, singleQuiz, userScores, managerScores, managerWiseScores, userLeaderboard, managerLeaderboard, singleQuestion, managerQuizScores } = require('../controllers/quizController');
 const auth = require('../middlewares/auth');
 const router = express.Router();
 
@@ -32,6 +32,9 @@ router.get('/user-scores/:userId', auth('manager', 'user'), userScores);
 
 // Endpoint to get manager scores
 router.get('/manager-scores/:managerId', auth('manager', 'user'), managerScores);
+
+// Quiz Id wise Manager Score
+router.get('/manager-quiz-scores/:managerId', auth('manager', 'user'), managerQuizScores);
 
 // Manager-wise Scores API Endpoint:
 router.get('/manager-wise-scores/:managerId', auth('manager'), managerWiseScores);

@@ -20,7 +20,36 @@ const updateQuestion = async (quizBody, quizId) => {
 }
 
 
-const getAllQuizs = async (query) => {
+// const getAllQuizs = async (query, loginUser) => {
+//     console.log(loginUser?.userId)
+//     const quizModel = new QueryBuilder(Quiz.find(), query)
+//         .search()
+//         .filter()
+//         .paginate()
+//         .sort()
+//         .fields();
+
+//     const result = await quizModel.modelQuery;
+//     console.log(result)
+//     const meta = await quizModel.meta();
+
+
+//     const managerScores = await UserResponse.find({ userId: loginUser?.userId });
+//     const quizScores = managerScores.reduce((accumulator, item) => {
+//         const { quizId, score } = item;
+//         accumulator[quizId] = (accumulator[quizId] || 0) + score;
+//         return accumulator;
+//     }, {});
+//     console.log(quizScores)
+
+
+//     return { result, meta };
+// }
+
+const getAllQuizs = async (query, loginUser) => {
+    console.log(loginUser?.userId);
+
+    // Use the QueryBuilder for fetching quiz data
     const quizModel = new QueryBuilder(Quiz.find(), query)
         .search()
         .filter()
@@ -28,10 +57,35 @@ const getAllQuizs = async (query) => {
         .sort()
         .fields();
 
+    // Fetch quiz data
     const result = await quizModel.modelQuery;
+    console.log(result);
+
+    // Fetch meta information
     const meta = await quizModel.meta();
-    return { result, meta };
-}
+
+    // Fetch manager scores for the logged-in user
+    const managerScores = await UserResponse.find({ userId: loginUser?.userId });
+
+    // Calculate quiz scores
+    const quizScores = managerScores.reduce((accumulator, item) => {
+        const { quizId, score } = item;
+        accumulator[quizId] = (accumulator[quizId] || 0) + score;
+        return accumulator;
+    }, {});
+    console.log(quizScores);
+
+    // Associate quizScores with corresponding quiz objects based on _id matching
+    const resultWithScores = result.map(quiz => ({
+        ...quiz.toObject(),
+        score: quizScores[quiz._id] || 0
+    }));
+
+    console.log(resultWithScores)
+
+    return { result: resultWithScores, meta };
+};
+
 
 const getSingleQuiz = async (id) => {
     const result = await Quiz.findById(id)
@@ -113,6 +167,17 @@ const getUserScores = async (userId) => {
 const getManager = async (managerId) => {
     const managerScores = await UserResponse.find({ userId: managerId });
     return managerScores;
+}
+
+const getQuizManagerScores = async (managerId) => {
+    const managerScores = await UserResponse.find({ userId: managerId });
+    const quizScores = managerScores.reduce((accumulator, item) => {
+        const { quizId, score } = item;
+        accumulator[quizId] = (accumulator[quizId] || 0) + score;
+        return accumulator;
+    }, {});
+    console.log(quizScores)
+    return quizScores;
 }
 
 const getManagerWiseScores = async (managerId) => {
@@ -199,6 +264,7 @@ module.exports = {
     getAnswerQuestion,
     getUserScores,
     getManager,
+    getQuizManagerScores,
     getManagerWiseScores,
     getUserLeaderboard,
     getManagerLeaderboard
