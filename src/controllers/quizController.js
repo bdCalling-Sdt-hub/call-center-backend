@@ -1,7 +1,7 @@
 const { Quiz } = require("../models/Quiz");
 const User = require("../models/User");
 const UserResponse = require("../models/UserResponses");
-const { addQuiz, updateQuestion, getAllQuizs, getSingleQuiz, getAnswerQuestion, getUserScores, getManager, getManagerWiseScores, getUserLeaderboard, getManagerLeaderboard, getSingleQuestion } = require("../services/QuizService");
+const { addQuiz, updateQuestion, getAllQuizs, getSingleQuiz, getAnswerQuestion, getUserScores, getManager, getManagerWiseScores, getUserLeaderboard, getManagerLeaderboard, getSingleQuestion, getQuizManagerScores } = require("../services/QuizService");
 const catchAsync = require("../utils/catchAsync");
 const sendResponse = require("../utils/sendResponse");
 
@@ -24,7 +24,7 @@ const updateQuiz = catchAsync(async (req, res) => {
 
 // Get all quizzes
 const getAllQuizzes = catchAsync(async (req, res) => {
-    const result = await getAllQuizs(req.query)
+    const result = await getAllQuizs(req.query, req.user)
     sendResponse(res, { statusCode: 200, data: result, message: 'Quiz Retrieve successfully', success: true })
 });
 
@@ -59,6 +59,12 @@ const managerScores = catchAsync(async (req, res) => {
     sendResponse(res, { statusCode: 200, data: result, message: "Manager Scores Retrieve successfully", success: true })
 })
 
+// Manager Quiz scores
+const managerQuizScores = catchAsync(async (req, res) => {
+    const result = await getQuizManagerScores(req.params.managerId)
+    sendResponse(res, { statusCode: 200, data: result, message: "Manager Scores Retrieve successfully", success: true })
+})
+
 // Manager Wise scores
 const managerWiseScores = catchAsync(async (req, res) => {
     const result = await getManagerWiseScores(req.params.managerId)
@@ -78,4 +84,4 @@ const managerLeaderboard = catchAsync(async (req, res) => {
 })
 
 
-module.exports = { createQuiz, getAllQuizzes, singleQuiz, singleQuestion, answerQuestion, updateQuiz, userScores, managerScores, managerWiseScores, userLeaderboard, managerLeaderboard };
+module.exports = { createQuiz, getAllQuizzes, singleQuiz, singleQuestion, answerQuestion, updateQuiz, userScores, managerScores, managerQuizScores, managerWiseScores, userLeaderboard, managerLeaderboard };
