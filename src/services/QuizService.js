@@ -125,12 +125,14 @@ const getAnswerQuestion = async (quizBody, loginUser) => {
 
     // Assuming answerIndex is the index of the selected answer in the array
     const quiz = await Quiz.findById(quizId);
+    // console.log(quiz)
 
     if (!quiz) {
         throw new Error('Quiz not found');
     }
 
-    const question = quiz.questions.id(questionId);
+    const question = quiz?.questions?.id(questionId);
+    // console.log("Question", question)
     if (!question) {
         throw new Error('Question not found');
     }
