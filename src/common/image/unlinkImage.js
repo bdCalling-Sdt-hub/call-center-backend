@@ -11,7 +11,7 @@ const unlinkSync = util.promisify(fs.unlink);
 //   }
 // }
 const unlinkImage = async (path) => {
-  const modifiedPath = `.${path}`;
+  const modifiedPath = `./public/${path}`;
   try {
     if (fs.existsSync(modifiedPath)) {
       console.log("path found ");

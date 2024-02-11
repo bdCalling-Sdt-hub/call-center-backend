@@ -1,4 +1,4 @@
 const createFileDetails = (folderName, filename) => {
-  return `/public/uploads/${folderName}/${filename}`;
+  return `/uploads/${folderName}/${filename}`;
 };
 module.exports = { createFileDetails };
