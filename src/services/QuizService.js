@@ -197,7 +197,6 @@ const getManagerWiseScores = async (managerId) => {
 const getUserLeaderboard = async () => {
     // Find all distinct user IDs in the UserResponse collection
     const distinctUserIds = await UserResponse.distinct('userId');
-
     // Calculate total scores for each user
     const leaderboard = await Promise.all(
         distinctUserIds.map(async (userId) => {
@@ -211,10 +210,27 @@ const getUserLeaderboard = async () => {
     const sortedLeaderboard = leaderboard.sort((a, b) => b.totalScore - a.totalScore);
 
     // Add rankings to the sorted leaderboard
-    const rankedLeaderboard = sortedLeaderboard.map((user, index) => ({
-        rank: index + 1,
-        ...user,
-    }));
+    // const rankedLeaderboard = sortedLeaderboard.map((user, index) => ({
+    //     rank: index + 1,
+    //     ...user,
+    // }));
+
+    // Add rankings to the sorted leaderboard
+    const rankedLeaderboard = await Promise.all(
+        sortedLeaderboard.map(async (user, index) => {
+            const userDetails = await User.findById(user.userId); // Assuming you have a User model
+            return {
+                rank: index + 1,
+                userId: user.userId,
+                totalScore: user.totalScore,
+                name: userDetails.name, // Assuming name is a field in your User model
+                email: userDetails.email, // Assuming email is a field in your User model
+                // Add more user details as needed
+            };
+        })
+    );
+
+    console.log(rankedLeaderboard)
 
     return rankedLeaderboard;
 }
