@@ -57,7 +57,7 @@ const userSignIn = async (userBody) => {
   // Token, set the Cokkie
   const accessToken = jwt.sign(
     { userId: user._id, email: user.email, role: user.role },
-    process.env.JWT_ACCESS_TOKEN,
+    "secret2020",
     { expiresIn: "12h" }
   );
 

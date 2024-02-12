@@ -52,9 +52,7 @@
 // //     }
 // // };
 
-
 // module.exports = { isValidUser };
-
 
 const httpStatus = require("http-status");
 const AppError = require("../errors/AppError.js");
@@ -62,31 +60,30 @@ const catchAsync = require("../utils/catchAsync.js");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const auth = (...userRoles) => {
-    return catchAsync(async (req, res, next) => {
+  return catchAsync(async (req, res, next) => {
+    const token = req?.headers?.authorization?.split(" ")[1];
 
-        const token = req?.headers?.authorization?.split(" ")[1];
-
-        if (!token) {
-            throw new AppError(httpStatus.UNAUTHORIZED, "you are not authorized!");
-        }
-        const decode = jwt.verify(token, process.env.JWT_ACCESS_TOKEN);
-        if (!decode) {
-            throw new AppError(httpStatus.UNAUTHORIZED, "invalid token");
-        }
-        const { role, userId, email } = decode;
-        // const isUserExist = User.isUserExist(email);
-        const isIdExit = User.findById(userId);
-        // if (!isUserExist) {
-        //     throw new AppError(httpStatus.NOT_FOUND, "user not found");
-        // }
-        if (!isIdExit) {
-            throw new AppError(httpStatus.NOT_FOUND, "user not found");
-        }
-        if (userRoles && !userRoles.includes(role)) {
-            throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorized ");
-        }
-        req.user = decode;
-        next();
-    });
+    if (!token) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "you are not authorized!");
+    }
+    const decode = jwt.verify(token, "secret2020");
+    if (!decode) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "invalid token");
+    }
+    const { role, userId, email } = decode;
+    // const isUserExist = User.isUserExist(email);
+    const isIdExit = User.findById(userId);
+    // if (!isUserExist) {
+    //     throw new AppError(httpStatus.NOT_FOUND, "user not found");
+    // }
+    if (!isIdExit) {
+      throw new AppError(httpStatus.NOT_FOUND, "user not found");
+    }
+    if (userRoles && !userRoles.includes(role)) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "You are not authorized ");
+    }
+    req.user = decode;
+    next();
+  });
 };
 module.exports = auth;
