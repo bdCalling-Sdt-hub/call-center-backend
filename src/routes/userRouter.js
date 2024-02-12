@@ -7,6 +7,7 @@ const {
   allUsers,
   singleUser,
   profile,
+  updatePassword,
 } = require("../controllers/userController");
 const router = express.Router();
 const fs = require("fs");
@@ -37,6 +38,12 @@ router.post("/sign-in", signIn);
 router.get("/", auth("manager"), allUsers);
 router.get("/profile", auth("manager", "user"), profile);
 router.get("/:id", auth("manager", "user"), singleUser);
-router.put("/", [uploadUsers.single("file")], updateProfile);
+router.put(
+  "/",
+  auth("manager", "user"),
+  [uploadUsers.single("file")],
+  updateProfile
+);
+router.patch("/update-password", auth("manager", "user"), updatePassword);
 
 module.exports = router;

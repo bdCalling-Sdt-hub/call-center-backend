@@ -8,13 +8,11 @@ const unlinkImage = require("../common/image/unlinkImage.js");
 
 const addManager = async (userBody) => {
   const { name, userName, email, password, role } = userBody;
-
   // Check if the user already exists
   const userExist = await User.findOne({ email });
   if (userExist) {
     throw new AppError(httpStatus.CONFLICT, "Manager already exists");
   }
-
   // Create the user in the database
   const user = await User.create({
     name,
@@ -105,6 +103,36 @@ const getSingleUser = async (id) => {
   return result;
 };
 
+const updateUserPassword = async (id, payload) => {
+  const { oldPassword } = payload;
+  const isUserExist = await User.findById(id);
+
+  if (!isUserExist) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User Not Found");
+  }
+  console.log(isUserExist);
+  const isPasswordMatched = bcrypt.compare(oldPassword, isUserExist?.password);
+  if (!isPasswordMatched) {
+    throw new AppError(httpStatus.BAD_REQUEST, "old password does not match");
+  }
+  // if old and new password are the same
+  if (oldPassword === payload?.newPassword) {
+    throw new AppError(
+      httpStatus.NOT_ACCEPTABLE,
+      "old password and new password should not be same"
+    );
+  }
+  const result = await User.findByIdAndUpdate(
+    id,
+    {
+      $set: {
+        password: payload?.newPassword,
+      },
+    },
+    { new: true }
+  );
+  return result;
+};
 module.exports = {
   addUser,
   addManager,
@@ -113,4 +141,5 @@ module.exports = {
   updateUser,
   getAllUsers,
   getSingleUser,
+  updateUserPassword,
 };

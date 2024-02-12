@@ -14,6 +14,7 @@ const {
   loginWithPasscode,
   getSingleUser,
   getProfile,
+  updateUserPassword,
 } = require("../services/userService");
 const User = require("../models/User");
 const sendResponse = require("../utils/sendResponse");
@@ -98,6 +99,17 @@ const singleUser = catchAsync(async (req, res) => {
     success: true,
   });
 });
+const updatePassword = catchAsync(async (req, res) => {
+  const id = req.user.userId;
+  console.log(req);
+  const result = await updateUserPassword(id, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "Password updated successfully",
+    success: true,
+  });
+});
 
 module.exports = {
   signUp,
@@ -107,4 +119,5 @@ module.exports = {
   createManager,
   allUsers,
   singleUser,
+  updatePassword,
 };
