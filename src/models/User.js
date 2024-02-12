@@ -6,8 +6,7 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is must be given"],
-      trim: true,
+      required: [true, "full name is required"],
     },
     userName: {
       type: String,
@@ -41,15 +40,35 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
     managerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    needPasswordChange: {
+      type: Boolean,
+      default: false,
+    },
+    status: {
+      type: String,
+      enum: ["active", "disabled"],
+      default: "active",
+    },
   },
-  { timestamps: true },
+
   {
+    timestamps: true,
     toJSON: {
-      transform(doc, ret) {
-        delete ret.password;
-      },
+      // virtuals: true,
     },
   }
+
+  // {
+  //   toJSON: {
+
+  //     // transform(doc, ret) {
+  //     //   delete ret.password;
+  //     // },
+  //   },
+  // }
 );
 
+// userSchema.virtual("fullName").get(function () {
+//   return this.name.firstName + " " + this.name.lastName;
+// });
 module.exports = mongoose.model("User", userSchema);

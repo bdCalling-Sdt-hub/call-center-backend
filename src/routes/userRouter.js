@@ -8,6 +8,7 @@ const {
   singleUser,
   profile,
   updatePassword,
+  retriveAllManagerUsers,
 } = require("../controllers/userController");
 const router = express.Router();
 const fs = require("fs");
@@ -19,6 +20,7 @@ const { isValidUser, verifyRefreshToken } = require("../middlewares/auth");
 const validationMiddleware = require("../middlewares/user/signupValidation");
 const { getSingleUser } = require("../services/userService");
 const auth = require("../middlewares/auth");
+const parseData = require("../middlewares/parseData.js");
 
 if (!fs.existsSync(UPLOADS_FOLDER_USERS)) {
   // If not, create the folder
@@ -36,12 +38,14 @@ router.post("/sign-up", auth("manager"), signUp);
 router.post("/create-manager", createManager);
 router.post("/sign-in", signIn);
 router.get("/", auth("manager"), allUsers);
+router.get("/managers-users", auth("manager"), retriveAllManagerUsers);
 router.get("/profile", auth("manager", "user"), profile);
 router.get("/:id", auth("manager", "user"), singleUser);
 router.put(
   "/",
   auth("manager", "user"),
   [uploadUsers.single("file")],
+  parseData(),
   updateProfile
 );
 router.patch("/update-password", auth("manager", "user"), updatePassword);

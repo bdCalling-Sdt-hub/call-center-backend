@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const QueryBuilder = require("../builder/QueryBuilder");
 const unlinkImage = require("../common/image/unlinkImage.js");
+const sendEmail = require("../utils/sendEmail.js");
 
 const addManager = async (userBody) => {
   const { name, userName, email, password, role } = userBody;
@@ -14,29 +15,31 @@ const addManager = async (userBody) => {
     throw new AppError(httpStatus.CONFLICT, "Manager already exists");
   }
   // Create the user in the database
-  const user = await User.create({
-    name,
-    userName,
-    email,
-    password,
-    role,
-  });
+  const user = await User.create(userBody);
 
   return user;
 };
 
 const addUser = async (userBody) => {
-  const { name, userName, email, password } = userBody;
-
+  const { email } = userBody;
   // Check if the user already exists
   const userExist = await User.findOne({ email });
   if (userExist) {
-    throw new AppError(httpStatus.CONFLICT, "User already exists");
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "User already exists with this same email"
+    );
   }
-
   // Create the user in the database
   const user = await User.create(userBody);
-
+  if (user) {
+    await sendEmail(
+      userBody?.email,
+      "Your Password is",
+      "",
+      userBody?.password
+    );
+  }
   return user;
 };
 
@@ -46,6 +49,9 @@ const userSignIn = async (userBody) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw new AppError(httpStatus.UNAUTHORIZED, "User Not Found");
+  }
+  if (user?.status !== "active") {
+    throw new AppError(httpStatus.BAD_REQUEST, "Your Account Is Disabled");
   }
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
@@ -64,6 +70,7 @@ const userSignIn = async (userBody) => {
 
 const getProfile = async (id) => {
   const result = await User.findById(id);
+  console.log("profile", result);
   return result;
 };
 
@@ -110,7 +117,7 @@ const updateUserPassword = async (id, payload) => {
   if (!isUserExist) {
     throw new AppError(httpStatus.BAD_REQUEST, "User Not Found");
   }
-  console.log(isUserExist);
+
   const isPasswordMatched = bcrypt.compare(oldPassword, isUserExist?.password);
   if (!isPasswordMatched) {
     throw new AppError(httpStatus.BAD_REQUEST, "old password does not match");
@@ -133,6 +140,20 @@ const updateUserPassword = async (id, payload) => {
   );
   return result;
 };
+const getManagerUsers = async (query) => {
+  const userQuery = new QueryBuilder(User.find(), query)
+    .search()
+    .filter()
+    .paginate()
+    .sort()
+    .fields();
+  const result = await userQuery.modelQuery;
+  const meta = await userQuery.meta();
+  return {
+    data: result,
+    meta,
+  };
+};
 module.exports = {
   addUser,
   addManager,
@@ -142,4 +163,5 @@ module.exports = {
   getAllUsers,
   getSingleUser,
   updateUserPassword,
+  getManagerUsers,
 };
