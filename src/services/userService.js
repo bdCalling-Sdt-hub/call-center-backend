@@ -76,6 +76,7 @@ const getProfile = async (id) => {
 const updateMyProfile = async (id, userBody) => {
   const { email } = userBody;
   const user = await User.findById(id);
+  console.log(user);
   if (!user) {
     throw new AppError(httpStatus.BAD_REQUEST, "User Not Found");
   }
@@ -88,7 +89,7 @@ const updateMyProfile = async (id, userBody) => {
       );
     }
   }
-  const result = await User.findOneAndUpdate(id, userBody, {
+  const result = await User.findByIdAndUpdate(id, userBody, {
     new: true,
   });
 
