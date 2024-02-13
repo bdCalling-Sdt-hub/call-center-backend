@@ -7,6 +7,7 @@ const userResponseSchema = new mongoose.Schema({
     questionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Question', required: true },
     answer: { type: String, required: true },
     score: { type: Number, required: true },
+    role: { type: String },
     // Other details like timestamp
 }, { timestamps: true }); // Adding timestamps for createdAt and updatedAt
 
