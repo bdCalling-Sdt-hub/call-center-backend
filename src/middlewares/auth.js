@@ -62,7 +62,7 @@ const User = require("../models/User");
 const auth = (...userRoles) => {
   return catchAsync(async (req, res, next) => {
     const token = req?.headers?.authorization?.split(" ")[1];
-    console.log(token);
+
     if (!token) {
       throw new AppError(httpStatus.UNAUTHORIZED, "you are not authorized!");
     }
@@ -71,10 +71,8 @@ const auth = (...userRoles) => {
       throw new AppError(httpStatus.UNAUTHORIZED, "invalid token");
     }
     const { role, userId, email } = decode;
-
     // const isUserExist = User.isUserExist(email);
     const isIdExit = await User.findById(userId);
-
     // if (!isUserExist) {
     //     throw new AppError(httpStatus.NOT_FOUND, "user not found");
     // }

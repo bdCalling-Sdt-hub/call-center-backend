@@ -9,6 +9,8 @@ const {
   profile,
   updatePassword,
   retriveAllManagerUsers,
+  changeStatus,
+  updateUser,
 } = require("../controllers/userController");
 const router = express.Router();
 const fs = require("fs");
@@ -18,7 +20,7 @@ const UPLOADS_FOLDER_USERS = "./public/uploads/users";
 const uploadUsers = userFileUploadMiddleware(UPLOADS_FOLDER_USERS);
 const { isValidUser, verifyRefreshToken } = require("../middlewares/auth");
 const validationMiddleware = require("../middlewares/user/signupValidation");
-const { getSingleUser } = require("../services/userService");
+
 const auth = require("../middlewares/auth");
 const parseData = require("../middlewares/parseData.js");
 
@@ -48,6 +50,14 @@ router.put(
   parseData(),
   updateProfile
 );
+router.patch(
+  "/update-user/:id",
+  auth("manager"),
+  [uploadUsers.single("file")],
+  parseData(),
+  updateUser
+);
 router.patch("/update-password", auth("manager", "user"), updatePassword);
+router.patch("/change-status/:id", auth("manager"), changeStatus);
 
 module.exports = router;

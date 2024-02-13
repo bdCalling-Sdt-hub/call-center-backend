@@ -70,17 +70,47 @@ const userSignIn = async (userBody) => {
 
 const getProfile = async (id) => {
   const result = await User.findById(id);
-  console.log("profile", result);
   return result;
 };
 
-const updateUser = async (userBody) => {
+const updateMyProfile = async (id, userBody) => {
   const { email } = userBody;
-
-  const user = await User.findOne({ email });
-  console.log("usererrrr", user);
+  const user = await User.findById(id);
   if (!user) {
-    throw new AppError(httpStatus.UNAUTHORIZED, "User Not Found");
+    throw new AppError(httpStatus.BAD_REQUEST, "User Not Found");
+  }
+  if (user?.email !== email) {
+    const isDuplicateUser = await User.findOne({ email });
+    if (isDuplicateUser) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "User Already Exist With This Same Email. Try Another One"
+      );
+    }
+  }
+  const result = await User.findOneAndUpdate({ email }, userBody, {
+    new: true,
+  });
+
+  if (userBody?.image && user?.image) {
+    unlinkImage(user?.image);
+  }
+  return result;
+};
+const updateUserByManager = async (id, userBody) => {
+  const { email } = userBody;
+  const user = await User.findById(id);
+  if (!user) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User Not Found");
+  }
+  if (user?.email !== email) {
+    const isDuplicateUser = await User.findOne({ email });
+    if (isDuplicateUser) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "User Already Exist With This Same Email. Try Another One"
+      );
+    }
   }
   const result = await User.findOneAndUpdate({ email }, userBody, {
     new: true,
@@ -154,14 +184,32 @@ const getManagerUsers = async (query) => {
     meta,
   };
 };
+
+const changeUserStatus = async (id, managerId, status) => {
+  const result = await User.findOneAndUpdate(
+    {
+      $and: [{ _id: id }, { managerId: managerId }],
+    },
+    {
+      $set: {
+        status: status,
+      },
+    },
+    { new: true }
+  );
+  return result;
+};
+
 module.exports = {
   addUser,
   addManager,
   userSignIn,
   getProfile,
-  updateUser,
+  updateMyProfile,
   getAllUsers,
   getSingleUser,
   updateUserPassword,
   getManagerUsers,
+  changeUserStatus,
+  updateUserByManager,
 };

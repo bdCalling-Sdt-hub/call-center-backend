@@ -7,27 +7,23 @@ const {
   addUser,
   userSignIn,
   addManager,
-  getUserByEmail,
   getAllUsers,
-  getUserById,
-  updateUser,
-  loginWithPasscode,
+  updateUserByManager,
   getSingleUser,
   getProfile,
   updateUserPassword,
   getManagerUsers,
+  changeUserStatus,
+  updateMyProfile,
 } = require("../services/userService");
-const User = require("../models/User");
 const sendResponse = require("../utils/sendResponse");
 const catchAsync = require("../utils/catchAsync");
 const { createFileDetails } = require("../common/image/createImage.js");
-const { request } = require("../app.js");
 const generateRandomPassword = require("../utils/randomPasswordGenerator.js");
 
 // create a manager
 const createManager = catchAsync(async (req, res) => {
   const result = await addManager(req.body);
-
   sendResponse(res, {
     statusCode: 201,
     data: result,
@@ -79,7 +75,21 @@ const updateProfile = catchAsync(async (req, res) => {
   if (req?.file) {
     req.body.image = createFileDetails("users", req?.file?.filename);
   }
-  const result = await updateUser(req.body);
+  const id = req.user.userId;
+  const result = await updateMyProfile(id, req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "User Update successfully",
+    success: true,
+  });
+});
+const updateUser = catchAsync(async (req, res) => {
+  console.log(req.params.id);
+  if (req?.file) {
+    req.body.image = createFileDetails("users", req?.file?.filename);
+  }
+  const result = await updateUserByManager(req.params.id, req.body);
   sendResponse(res, {
     statusCode: 200,
     data: result,
@@ -97,6 +107,7 @@ const allUsers = catchAsync(async (req, res) => {
     success: true,
   });
 });
+
 const retriveAllManagerUsers = catchAsync(async (req, res) => {
   req.query.managerId = req.user.userId;
   const result = await getManagerUsers(req.query);
@@ -128,6 +139,16 @@ const updatePassword = catchAsync(async (req, res) => {
     success: true,
   });
 });
+const changeStatus = catchAsync(async (req, res) => {
+  const id = req.user.userId;
+  const result = await changeUserStatus(req.params.id, id, req.body.status);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "Status Changed Successfully",
+    success: true,
+  });
+});
 
 module.exports = {
   signUp,
@@ -139,4 +160,6 @@ module.exports = {
   singleUser,
   updatePassword,
   retriveAllManagerUsers,
+  changeStatus,
+  updateUser,
 };
