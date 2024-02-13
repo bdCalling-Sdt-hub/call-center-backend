@@ -88,7 +88,7 @@ const updateMyProfile = async (id, userBody) => {
       );
     }
   }
-  const result = await User.findOneAndUpdate({ email }, userBody, {
+  const result = await User.findOneAndUpdate(id, userBody, {
     new: true,
   });
 
@@ -112,9 +112,11 @@ const updateUserByManager = async (id, userBody) => {
       );
     }
   }
-  const result = await User.findOneAndUpdate({ email }, userBody, {
+  console.log(userBody);
+  const result = await User.findByIdAndUpdate(id, userBody, {
     new: true,
   });
+  console.log("result", result);
 
   if (userBody?.image && user?.image) {
     unlinkImage(user?.image);
