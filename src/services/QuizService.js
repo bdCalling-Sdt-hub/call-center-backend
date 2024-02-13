@@ -223,9 +223,7 @@ const getUserLeaderboard = async () => {
                 rank: index + 1,
                 userId: user.userId,
                 totalScore: user.totalScore,
-                name: userDetails.name, // Assuming name is a field in your User model
-                email: userDetails.email, // Assuming email is a field in your User model
-                // Add more user details as needed
+                userDetails
             };
         })
     );
