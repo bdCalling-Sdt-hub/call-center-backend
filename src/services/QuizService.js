@@ -112,8 +112,9 @@ const getAnswerQuestion = async (quizBody, loginUser) => {
     const { userId } = loginUser;
     const user = await User.findOne({ _id: userId });
     let managerId = user.managerId;
+    let role = user?.role;
 
-    console.log("quizId", quizId, "questionId", questionId, "answerIndex", answerIndex);
+    // console.log("quizId", quizId, "questionId", questionId, "answerIndex", answerIndex);
 
     // Check if the user has already answered this question in the current quiz
     // const hasAnswered = await UserResponse.findOne({ userId, quizId, managerId, questionId });
@@ -196,8 +197,8 @@ const getManagerWiseScores = async (managerId) => {
 
 const getUserLeaderboard = async () => {
     // Find all distinct user IDs in the UserResponse collection
-    const distinctUserIds = await UserResponse.distinct('userId');
-    console.log(distinctUserIds)
+    const distinctUserIds = await UserResponse.distinct('userId', { role: "user" });
+
     // Calculate total scores for each user
     const leaderboard = await Promise.all(
         distinctUserIds.map(async (userId) => {
@@ -219,8 +220,8 @@ const getUserLeaderboard = async () => {
     // Add rankings to the sorted leaderboard
     const rankedLeaderboard = await Promise.all(
         sortedLeaderboard.map(async (user, index) => {
-            const userDetailss = await User.findById(user.userId); // Assuming you have a User model
-            const userDetails = await User.find({ role: 'user', _id: user.userId });
+            const userDetails = await User.findById(user.userId); // Assuming you have a User model
+            // const userDetails = await User.find({ role: 'user', _id: user.userId });
             return {
                 rank: index + 1,
                 userId: user.userId,
@@ -229,8 +230,6 @@ const getUserLeaderboard = async () => {
             };
         })
     );
-
-    console.log(rankedLeaderboard)
 
     return rankedLeaderboard;
 }
