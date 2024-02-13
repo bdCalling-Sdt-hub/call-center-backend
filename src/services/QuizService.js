@@ -150,7 +150,7 @@ const getAnswerQuestion = async (quizBody, loginUser) => {
 
     // Create or update user response in the UserResponses collection
     const existingUserResponse = await UserResponse.findOneAndUpdate(
-        { userId, quizId, managerId, questionId, answer },
+        { userId, quizId, managerId, questionId, answer, role },
         { $inc: { score } },
         { upsert: true, new: true }
     );
@@ -197,6 +197,7 @@ const getManagerWiseScores = async (managerId) => {
 const getUserLeaderboard = async () => {
     // Find all distinct user IDs in the UserResponse collection
     const distinctUserIds = await UserResponse.distinct('userId');
+    console.log(distinctUserIds)
     // Calculate total scores for each user
     const leaderboard = await Promise.all(
         distinctUserIds.map(async (userId) => {
@@ -218,7 +219,8 @@ const getUserLeaderboard = async () => {
     // Add rankings to the sorted leaderboard
     const rankedLeaderboard = await Promise.all(
         sortedLeaderboard.map(async (user, index) => {
-            const userDetails = await User.findById(user.userId); // Assuming you have a User model
+            const userDetailss = await User.findById(user.userId); // Assuming you have a User model
+            const userDetails = await User.find({ role: 'user', _id: user.userId });
             return {
                 rank: index + 1,
                 userId: user.userId,
