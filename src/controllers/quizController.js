@@ -2,7 +2,6 @@ const { Quiz } = require("../models/Quiz");
 const User = require("../models/User");
 const UserResponse = require("../models/UserResponses");
 const {
-  addQuiz,
   updateQuestion,
   getAllQuizs,
   getSingleQuiz,
@@ -14,17 +13,22 @@ const {
   getManagerLeaderboard,
   getSingleQuestion,
   getQuizManagerScores,
+  insertQuizIntoDB,
+  insertNewQuestionsIntoDb,
+  findRandomQuestions,
+  getRandomContextFromDb,
 } = require("../services/QuizService");
 const catchAsync = require("../utils/catchAsync");
 const sendResponse = require("../utils/sendResponse");
 
-// Create a new quiz (with questions and answers)
-const createQuiz = catchAsync(async (req, res) => {
-  const result = await addQuiz(req.body);
+// v2
+const insertQuiz = catchAsync(async (req, res) => {
+  req.body.managerId = req.user.userId;
+  const result = await insertQuizIntoDB(req.body);
   sendResponse(res, {
     statusCode: 200,
     data: result,
-    message: "Quiz added successfully",
+    message: "Quiz inserted successfully",
     success: true,
   });
 });
@@ -152,9 +156,28 @@ const managerLeaderboard = catchAsync(async (req, res) => {
     success: true,
   });
 });
+const findARandomContext = catchAsync(async (req, res) => {
+  const result = await getRandomContextFromDb();
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "random question retrive successfully",
+    success: true,
+  });
+});
+
+const findRandomQuestionsFromDb = catchAsync(async (req, res) => {
+  const result = await findRandomQuestions();
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "random question retrive successfully",
+    success: true,
+  });
+});
 
 module.exports = {
-  createQuiz,
+  insertQuiz,
   getAllQuizzes,
   singleQuiz,
   singleQuestion,
@@ -166,4 +189,6 @@ module.exports = {
   managerWiseScores,
   userLeaderboard,
   managerLeaderboard,
+  findRandomQuestionsFromDb,
+  findARandomContext,
 };
