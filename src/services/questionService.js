@@ -19,6 +19,7 @@ const deleteQuestionFromDb = async (id, payload) => {
   return result;
 };
 const findRandomQuestionsFromDb = async (contextId, userId) => {
+  console.log("contextId", contextId);
   const contextObjectId = new mongoose.Types.ObjectId(contextId);
   const userObjectId = new mongoose.Types.ObjectId(userId);
   const pipeline = [
@@ -48,7 +49,7 @@ const findRandomQuestionsFromDb = async (contextId, userId) => {
   ];
 
   const result = await Question.aggregate(pipeline);
-  return result;
+  return result[0];
 };
 module.exports = {
   insertNewQuestionsIntoDb,

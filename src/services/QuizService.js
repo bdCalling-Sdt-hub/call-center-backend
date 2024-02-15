@@ -48,30 +48,6 @@ const insertQuizIntoDB = async (payload) => {
   }
 };
 
-// const getAllQuizs = async (query, loginUser) => {
-//     console.log(loginUser?.userId)
-//     const quizModel = new QueryBuilder(Quiz.find(), query)
-//         .search()
-//         .filter()
-//         .paginate()
-//         .sort()
-//         .fields();
-
-//     const result = await quizModel.modelQuery;
-//     console.log(result)
-//     const meta = await quizModel.meta();
-
-//     const managerScores = await UserResponse.find({ userId: loginUser?.userId });
-//     const quizScores = managerScores.reduce((accumulator, item) => {
-//         const { quizId, score } = item;
-//         accumulator[quizId] = (accumulator[quizId] || 0) + score;
-//         return accumulator;
-//     }, {});
-//     console.log(quizScores)
-
-//     return { result, meta };
-// }
-
 const getAllQuizs = async (query, loginUser) => {
   // Use the QueryBuilder for fetching quiz data
   const quizModel = new QueryBuilder(Quiz.find(), query)
@@ -278,8 +254,9 @@ const getManagerLeaderboard = async (managerId) => {
   return rankedLeaderboard;
 };
 const getRandomContextFromDb = async () => {
-  const result = Quiz.aggregate([{ $sample: { size: 1 } }]);
-  return result;
+  const result = await Quiz.aggregate([{ $sample: { size: 1 } }]);
+
+  return result[0];
 };
 
 module.exports = {
