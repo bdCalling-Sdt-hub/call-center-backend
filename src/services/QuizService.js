@@ -282,22 +282,6 @@ const getRandomContextFromDb = async () => {
   return result;
 };
 
-const findRandomQuestions = async () => {
-  const result = await Question.aggregate([
-    { $sample: { size: 1 } },
-    {
-      $lookup: {
-        from: "quizzes",
-        localField: "context",
-        foreignField: "_id",
-        as: "quiz",
-      },
-    },
-  ]);
-  console.log("result", result);
-  return result;
-};
-
 module.exports = {
   insertQuizIntoDB,
   getAllQuizs,
@@ -309,6 +293,6 @@ module.exports = {
   getManagerWiseScores,
   getUserLeaderboard,
   getManagerLeaderboard,
-  findRandomQuestions,
+
   getRandomContextFromDb,
 };

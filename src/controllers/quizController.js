@@ -166,16 +166,6 @@ const findARandomContext = catchAsync(async (req, res) => {
   });
 });
 
-const findRandomQuestionsFromDb = catchAsync(async (req, res) => {
-  const result = await findRandomQuestions();
-  sendResponse(res, {
-    statusCode: 200,
-    data: result,
-    message: "random question retrive successfully",
-    success: true,
-  });
-});
-
 module.exports = {
   insertQuiz,
   getAllQuizzes,
@@ -189,6 +179,6 @@ module.exports = {
   managerWiseScores,
   userLeaderboard,
   managerLeaderboard,
-  findRandomQuestionsFromDb,
+
   findARandomContext,
 };

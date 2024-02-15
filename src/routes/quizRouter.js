@@ -12,7 +12,6 @@ const {
   singleQuestion,
   managerQuizScores,
   insertQuiz,
-  findRandomQuestionsFromDb,
   findARandomContext,
 } = require("../controllers/quizController");
 const auth = require("../middlewares/auth");
@@ -29,11 +28,7 @@ router.get(
   auth("manager", "user"),
   managerLeaderboard
 );
-router.get(
-  "/random-question",
-  auth("user", "manager"),
-  findRandomQuestionsFromDb
-);
+
 router.get("/random-context", auth("user", "manager"), findARandomContext);
 // Get all quizzes
 router.get("/", auth("manager", "user"), getAllQuizzes);
