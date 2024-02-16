@@ -76,6 +76,8 @@ const updateProfile = catchAsync(async (req, res) => {
     req.body.image = createFileDetails("users", req?.file?.filename);
   }
   const id = req.user.userId;
+  console.log(id, req.body);
+
   const result = await updateMyProfile(id, req.body);
   sendResponse(res, {
     statusCode: 200,

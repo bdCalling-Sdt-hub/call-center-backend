@@ -43,7 +43,7 @@ router.get("/", auth("manager"), allUsers);
 router.get("/managers-users", auth("manager"), retriveAllManagerUsers);
 router.get("/profile", auth("manager", "user"), profile);
 router.get("/:id", auth("manager", "user"), singleUser);
-router.put(
+router.patch(
   "/",
   auth("manager", "user"),
   [uploadUsers.single("file")],

@@ -2,45 +2,51 @@ const { Quiz } = require("../models/Quiz");
 const User = require("../models/User");
 const UserResponse = require("../models/UserResponses");
 const {
-    addQuiz,
-    updateQuestion,
-    getAllQuizs,
-    getSingleQuiz,
-    getAnswerQuestion,
-    getUserScores,
-    getManager,
-    getManagerWiseScores,
-    getUserLeaderboard,
-    getManagerLeaderboard,
-    getSingleQuestion,
-    getQuizManagerScores,
+
+  updateQuestion,
+  getAllQuizs,
+  getSingleQuiz,
+  getAnswerQuestion,
+  getUserScores,
+  getManager,
+  getManagerWiseScores,
+  getUserLeaderboard,
+  getManagerLeaderboard,
+  getSingleQuestion,
+  getQuizManagerScores,
+  insertQuizIntoDB,
+  insertNewQuestionsIntoDb,
+
+  getRandomContextFromDb,
 } = require("../services/QuizService");
 const catchAsync = require("../utils/catchAsync");
 const sendResponse = require("../utils/sendResponse");
 
+
 // Create a new quiz (with questions and answers)
-const createQuiz = catchAsync(async (req, res) => {
-    const result = await addQuiz(req.body);
-    sendResponse(res, {
-        statusCode: 200,
-        data: result,
-        message: "Quiz added successfully",
-        success: true,
-    });
+// v2
+const insertQuiz = catchAsync(async (req, res) => {
+  req.body.managerId = req.user.userId;
+  const result = await insertQuizIntoDB(req.body);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "Quiz inserted successfully",
+    success: true,
+  });
 });
 
 // Update a new question
 const updateQuiz = catchAsync(async (req, res) => {
-    const quizData = req.body;
-    const quizId = req.params.id;
-
-    const result = await updateQuestion(quizData, quizId);
-    sendResponse(res, {
-        statusCode: 200,
-        data: result,
-        message: "Question updated successfully",
-        success: true,
-    });
+  const quizData = req.body;
+  const quizId = req.params.id;
+  const result = await updateQuestion(quizData, quizId);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "Question updated successfully",
+    success: true,
+  });
 });
 
 // Get all quizzes
@@ -152,18 +158,30 @@ const managerLeaderboard = catchAsync(async (req, res) => {
         success: true,
     });
 });
+const findARandomContext = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  const result = await getRandomContextFromDb(userId);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "random question retrive successfully",
+    success: true,
+  });
+});
 
 module.exports = {
-    createQuiz,
-    getAllQuizzes,
-    singleQuiz,
-    singleQuestion,
-    answerQuestion,
-    updateQuiz,
-    userScores,
-    managerScores,
-    managerQuizScores,
-    managerWiseScores,
-    userLeaderboard,
-    managerLeaderboard,
+  insertQuiz,
+  getAllQuizzes,
+  singleQuiz,
+  singleQuestion,
+  answerQuestion,
+  updateQuiz,
+  userScores,
+  managerScores,
+  managerQuizScores,
+  managerWiseScores,
+  userLeaderboard,
+  managerLeaderboard,
+
+  findARandomContext,
 };

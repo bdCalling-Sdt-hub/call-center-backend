@@ -7,6 +7,9 @@ const { notFoundHandler, errorHandler } = require("./middlewares/errorHandler");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const globalErrorHandler = require("./middlewares/GlobalErrorHanlder");
+const questionRoutes = require("./routes/questionRouter.js");
+const { userResponseRouter } = require("./routes/userResponseRouter.js");
+const leaderBoardRoutes = require("./routes/leaderBoardRouter.js");
 require("dotenv").config();
 const app = express();
 
@@ -44,6 +47,9 @@ app.use(
 //initilizing API routes
 app.use("/api/users", userRouter);
 app.use("/api/quiz", quizRouter);
+app.use("/api/questions", questionRoutes);
+app.use("/api/user-response", userResponseRouter);
+app.use("/api/leaderboard", leaderBoardRoutes);
 
 //testing API is alive
 app.get("/test", (req, res) => {
