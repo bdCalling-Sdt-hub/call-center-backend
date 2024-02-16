@@ -37,7 +37,6 @@ const insertQuiz = catchAsync(async (req, res) => {
 const updateQuiz = catchAsync(async (req, res) => {
   const quizData = req.body;
   const quizId = req.params.id;
-
   const result = await updateQuestion(quizData, quizId);
   sendResponse(res, {
     statusCode: 200,
@@ -157,7 +156,8 @@ const managerLeaderboard = catchAsync(async (req, res) => {
   });
 });
 const findARandomContext = catchAsync(async (req, res) => {
-  const result = await getRandomContextFromDb();
+  const userId = req.user.userId;
+  const result = await getRandomContextFromDb(userId);
   sendResponse(res, {
     statusCode: 200,
     data: result,

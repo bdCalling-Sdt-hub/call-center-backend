@@ -9,7 +9,13 @@ const insertNewQuestionsIntoDb = async (id, payload) => {
   const result = await Question.create(data);
   return result;
 };
-
+const getTotalQuestionsFromDB = async (id) => {
+  const result = await Question.find({ context: id });
+  return {
+    result,
+    total: result.length,
+  };
+};
 const updateQuestionintoDB = async (id, payload) => {
   const result = await Question.findByIdAndUpdate(id, payload, { new: true });
   return result;
@@ -53,6 +59,7 @@ const findRandomQuestionsFromDb = async (contextId, userId) => {
 };
 module.exports = {
   insertNewQuestionsIntoDb,
+  getTotalQuestionsFromDB,
   updateQuestionintoDB,
   deleteQuestionFromDb,
   findRandomQuestionsFromDb,

@@ -3,6 +3,7 @@ const {
   updateQuestionintoDB,
   deleteQuestionFromDb,
   findRandomQuestionsFromDb,
+  getTotalQuestionsFromDB,
 } = require("../services/questionService.js");
 const catchAsync = require("../utils/catchAsync.js");
 const sendResponse = require("../utils/sendResponse.js");
@@ -13,6 +14,15 @@ const insertNewQuestion = catchAsync(async (req, res) => {
     statusCode: 200,
     data: result,
     message: "questions added  successfully",
+    success: true,
+  });
+});
+const getTotalQuestions = catchAsync(async (req, res) => {
+  const result = await getTotalQuestionsFromDB(req.params.id);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "all questions retrived  successfully",
     success: true,
   });
 });
@@ -48,6 +58,7 @@ const findRandomQuestions = catchAsync(async (req, res) => {
 });
 module.exports = {
   insertNewQuestion,
+  getTotalQuestions,
   updateQuestion,
   deleteQuestion,
   findRandomQuestions,

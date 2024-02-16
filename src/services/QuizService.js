@@ -253,10 +253,15 @@ const getManagerLeaderboard = async (managerId) => {
 
   return rankedLeaderboard;
 };
-const getRandomContextFromDb = async () => {
-  const result = await Quiz.aggregate([{ $sample: { size: 1 } }]);
+const getRandomContextFromDb = async (userId) => {
+  const answeredQuestionIds = await UserResponse.distinct("questionId", {
+    userId,
+  });
+  const questions = await Question.find({ _id: { $in: answeredQuestionIds } });
+  // const result = await Quiz.aggregate([{ $sample: { size: 1 } }]);
 
-  return result[0];
+  // return result[0];
+  return questions;
 };
 
 module.exports = {

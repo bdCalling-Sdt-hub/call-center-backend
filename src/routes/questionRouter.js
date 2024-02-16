@@ -5,9 +5,11 @@ const {
   updateQuestion,
   deleteQuestion,
   findRandomQuestions,
+  getTotalQuestions,
 } = require("../controllers/question.controller.js");
 const router = express.Router();
 router.post("/:id", auth("manager"), insertNewQuestion);
+router.get("/:id", auth("manager"), getTotalQuestions);
 router.get(
   "/random-question/:contextId",
   auth("manager", "user"),
