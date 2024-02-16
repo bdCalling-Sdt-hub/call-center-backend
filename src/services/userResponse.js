@@ -82,7 +82,7 @@ const getManagerLeaderBoardDataFromDB = async () => {
     { $unwind: "$questions" },
     {
       $group: {
-        _id: "$questions.contex",
+        _id: "$questions.context",
         score: { $sum: "$score" },
         userDetails: { $push: "$users" },
         questions: { $push: "$questions" },
