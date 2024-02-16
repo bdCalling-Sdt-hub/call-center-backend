@@ -5,6 +5,7 @@ const { Quiz, Question, Answer } = require("../models/Quiz");
 const User = require("../models/User");
 const UserResponse = require("../models/UserResponses");
 const mongoose = require("mongoose");
+const LeaderBoard = require("../models/leaderBorad.js");
 const insertQuizIntoDB = async (payload) => {
   const { managerId, context, ...others } = payload;
   const session = await mongoose.startSession();
@@ -254,14 +255,16 @@ const getManagerLeaderboard = async (managerId) => {
   return rankedLeaderboard;
 };
 const getRandomContextFromDb = async (userId) => {
-  const answeredQuestionIds = await UserResponse.distinct("questionId", {
+  const completedContextId = await LeaderBoard.distinct("contextId", {
     userId,
   });
-  const questions = await Question.find({ _id: { $in: answeredQuestionIds } });
-  // const result = await Quiz.aggregate([{ $sample: { size: 1 } }]);
 
-  // return result[0];
-  return questions;
+  const result = await Quiz.aggregate([
+    { $match: { _id: { $nin: completedContextId } } },
+    { $sample: { size: 1 } },
+  ]);
+
+  return result[0];
 };
 
 module.exports = {
