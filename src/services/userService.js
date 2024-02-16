@@ -87,7 +87,7 @@ const updateMyProfile = async (id, userBody) => {
         "User Already Exist With This Same Email. Try Another One"
       );
     }
-  }
+  } 
   const result = await User.findOneAndUpdate(id, userBody, {
     new: true,
   });
