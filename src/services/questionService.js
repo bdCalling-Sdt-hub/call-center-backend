@@ -9,7 +9,7 @@ const insertNewQuestionsIntoDb = async (id, payload) => {
   const result = await Question.create(data);
   return result;
 };
-const getTotalQuestion = async (id) => {
+const getTotalQuestionsFromDB = async (id) => {
   const result = await Question.find({ context: id });
   return {
     result,
@@ -53,13 +53,12 @@ const findRandomQuestionsFromDb = async (contextId, userId) => {
     { $sample: { size: 1 } },
     { $unset: "userResponses" },
   ];
-
   const result = await Question.aggregate(pipeline);
-  return result[0];
+  return result[0] ? result[0] : null;
 };
 module.exports = {
   insertNewQuestionsIntoDb,
-  getTotalQuestion,
+  getTotalQuestionsFromDB,
   updateQuestionintoDB,
   deleteQuestionFromDb,
   findRandomQuestionsFromDb,

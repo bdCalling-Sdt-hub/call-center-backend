@@ -15,7 +15,7 @@ const {
   getQuizManagerScores,
   insertQuizIntoDB,
   insertNewQuestionsIntoDb,
-  findRandomQuestions,
+
   getRandomContextFromDb,
 } = require("../services/QuizService");
 const catchAsync = require("../utils/catchAsync");

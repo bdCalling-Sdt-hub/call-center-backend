@@ -1,6 +1,8 @@
 const {
   insertResponseintoDb,
   CalculateTotalScore,
+  getManagerLeaderBoardDataFromDB,
+  getUsersLeaderboardDataFromDB,
 } = require("../services/userResponse.js");
 const catchAsync = require("../utils/catchAsync.js");
 const sendResponse = require("../utils/sendResponse.js");
@@ -25,8 +27,28 @@ const calculateScore = catchAsync(async (req, res) => {
     success: true,
   });
 });
+const getManagerLeaderBoardData = catchAsync(async (req, res) => {
+  const result = await getManagerLeaderBoardDataFromDB();
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "managers realderBoard Data retrived successfully",
+    success: true,
+  });
+});
+const getUserLeaderBoardData = catchAsync(async (req, res) => {
+  const result = await getUsersLeaderboardDataFromDB();
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "users realderBoard Data retrived successfully",
+    success: true,
+  });
+});
 
 module.exports = {
   insertQuizAnswer,
   calculateScore,
+  getManagerLeaderBoardData,
+  getUserLeaderBoardData,
 };

@@ -278,6 +278,5 @@ module.exports = {
   getManagerWiseScores,
   getUserLeaderboard,
   getManagerLeaderboard,
-
   getRandomContextFromDb,
 };

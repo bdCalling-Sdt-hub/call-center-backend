@@ -12,10 +12,6 @@ const LeaderBoardSchema = new mongoose.Schema(
       ref: "Context",
       required: true,
     },
-    scores: {
-      type: Number,
-      required: true,
-    },
   },
   {
     timestamps: true,
