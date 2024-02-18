@@ -14,6 +14,11 @@ const userResponseSchema = new mongoose.Schema(
       ref: "Question",
       required: true,
     },
+    contextId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Quiz",
+      required: true,
+    },
     answerId: { type: String, required: true },
     score: { type: Number, required: true },
     // role: { type: String },

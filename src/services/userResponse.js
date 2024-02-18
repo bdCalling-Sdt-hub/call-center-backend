@@ -1,6 +1,9 @@
+const httpStatus = require("http-status");
+const AppError = require("../errors/AppError.js");
 const { Question } = require("../models/Quiz.js");
 const UserResponse = require("../models/UserResponses.js");
 const mongoose = require("mongoose");
+const LeaderBoard = require("../models/leaderBorad.js");
 const insertResponseintoDb = async (payload) => {
   const { questionId, answerId } = payload;
   const questionObjectId = new mongoose.Types.ObjectId(questionId);
@@ -82,15 +85,15 @@ const getManagerLeaderBoardDataFromDB = async () => {
     { $unwind: "$questions" },
     {
       $group: {
-        _id: "$questions.context",
+        _id: { userId: "$users._id" },
         score: { $sum: "$score" },
-        userDetails: { $push: "$users" },
-        questions: { $push: "$questions" },
+        userDetails: { $first: "$users" },
       },
     },
 
     { $sort: { score: -1 } },
   ]);
+
   return result;
 };
 const getUsersLeaderboardDataFromDB = async () => {
@@ -118,9 +121,48 @@ const getUsersLeaderboardDataFromDB = async () => {
   return result;
 };
 
+const deleteAllResponsesFromDB = async (contextId, usreId) => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    const deleteAllResponses = await UserResponse.findOneAndDelete(
+      [
+        {
+          userId: usreId,
+          contextId: contextId,
+        },
+      ],
+      { session }
+    );
+    if (!deleteAllResponses) {
+      throw new AppError(httpStatus.BAD_REQUEST, "something went wrong");
+    }
+    const deleteLeaderBoard = await LeaderBoard.findOneAndDelete(
+      [
+        {
+          userId: usreId,
+          contextId: contextId,
+        },
+      ],
+      { session }
+    );
+    if (!deleteLeaderBoard) {
+      throw new AppError(httpStatus.BAD_REQUEST, "something went wrong");
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+    return deleteAllResponses[0];
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    throw new Error(err);
+  }
+};
 module.exports = {
   insertResponseintoDb,
   CalculateTotalScore,
   getManagerLeaderBoardDataFromDB,
   getUsersLeaderboardDataFromDB,
+  deleteAllResponsesFromDB,
 };

@@ -4,6 +4,7 @@ const {
   calculateScore,
   getManagerLeaderBoardData,
   getUserLeaderBoardData,
+  deleteAllResponses,
 } = require("../controllers/userResponse.js");
 const auth = require("../middlewares/auth.js");
 const router = express.Router();
@@ -15,6 +16,11 @@ router.get(
   getUserLeaderBoardData
 );
 router.get("/total-score/:id", auth("user", "manager"), calculateScore);
+router.delete(
+  "/delete-response/:id",
+  auth("user", "manager"),
+  deleteAllResponses
+);
 const userResponseRouter = router;
 module.exports = {
   userResponseRouter,
