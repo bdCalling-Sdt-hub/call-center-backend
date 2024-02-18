@@ -47,7 +47,7 @@ const getUserLeaderBoardData = catchAsync(async (req, res) => {
   });
 });
 const deleteAllResponses = catchAsync(async (req, res) => {
-  const result = await deleteAllResponsesFromDB();
+  const result = await deleteAllResponsesFromDB(req.params.id, req.user.userId);
   sendResponse(res, {
     statusCode: 200,
     data: result,

@@ -64,12 +64,15 @@ const auth = (...userRoles) => {
     const token = req?.headers?.authorization?.split(" ")[1];
 
     if (!token) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "you are not authorized!");
+      throw new AppError(401, "you are not authorized!");
     }
-    const decode = jwt.verify(token, "secret2020");
-    if (!decode) {
-      throw new AppError(httpStatus.UNAUTHORIZED, "invalid token");
+    let decode;
+    try {
+      decode = jwt.verify(token, "secret2020");
+    } catch (err) {
+      throw new AppError(httpStatus.UNAUTHORIZED, "unauthorized");
     }
+    console.log(decode);
     const { role, userId, email } = decode;
     // const isUserExist = User.isUserExist(email);
     const isIdExit = await User.findById(userId);

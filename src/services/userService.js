@@ -62,7 +62,7 @@ const userSignIn = async (userBody) => {
   const accessToken = jwt.sign(
     { userId: user._id, email: user.email, role: user.role },
     "secret2020",
-    { expiresIn: "12h" }
+    { expiresIn: "1d" }
   );
 
   return { user, accessToken };
@@ -89,7 +89,7 @@ const updateMyProfile = async (id, userBody) => {
       );
     }
   }
-  
+
   const result = await User.findByIdAndUpdate(id, userBody, {
     new: true,
   });

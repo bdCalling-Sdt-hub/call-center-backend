@@ -109,51 +109,58 @@ const getUsersLeaderboardDataFromDB = async () => {
     { $unwind: "$users" },
     { $match: { "users.role": "user" } },
     {
-      $group: {
-        _id: null,
-        score: { $sum: "$score" },
-        userDetails: { $push: "$users" },
+      $lookup: {
+        from: "questions",
+        localField: "questionId",
+        foreignField: "_id",
+        as: "questions",
       },
     },
-    { $unwind: "$userDetails" },
+    { $unwind: "$questions" },
+    {
+      $group: {
+        _id: { userId: "$users._id" },
+        score: { $sum: "$score" },
+        userDetails: { $first: "$users" },
+      },
+    },
+
     { $sort: { score: -1 } },
   ]);
   return result;
 };
 
-const deleteAllResponsesFromDB = async (contextId, usreId) => {
+const deleteAllResponsesFromDB = async (contextId, userId) => {
+  console.log(contextId);
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    const deleteAllResponses = await UserResponse.findOneAndDelete(
-      [
-        {
-          userId: usreId,
-          contextId: contextId,
-        },
-      ],
+    const deleteAllResponses = await UserResponse.deleteMany(
+      {
+        userId: userId,
+        contextId: contextId,
+      },
       { session }
     );
-    if (!deleteAllResponses) {
-      throw new AppError(httpStatus.BAD_REQUEST, "something went wrong");
-    }
-    const deleteLeaderBoard = await LeaderBoard.findOneAndDelete(
-      [
-        {
-          userId: usreId,
-          contextId: contextId,
-        },
-      ],
-      { session }
-    );
-    if (!deleteLeaderBoard) {
-      throw new AppError(httpStatus.BAD_REQUEST, "something went wrong");
-    }
 
+    if (!deleteAllResponses.acknowledged) {
+      throw new AppError(httpStatus.BAD_REQUEST, "something went wrong");
+    }
+    const deleteLeaderBoard = await LeaderBoard.deleteMany(
+      {
+        userId: userId,
+        contextId: contextId,
+      },
+      { session }
+    );
+    if (!deleteLeaderBoard.acknowledged) {
+      throw new AppError(httpStatus.BAD_REQUEST, "something went wrong");
+    }
     await session.commitTransaction();
     session.endSession();
     return deleteAllResponses[0];
   } catch (err) {
+    console.log(err);
     await session.abortTransaction();
     session.endSession();
     throw new Error(err);
