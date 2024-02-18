@@ -89,6 +89,7 @@ const updateMyProfile = async (id, userBody) => {
       );
     }
   }
+  
   const result = await User.findByIdAndUpdate(id, userBody, {
     new: true,
   });
