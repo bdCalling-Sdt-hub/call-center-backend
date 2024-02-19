@@ -73,7 +73,28 @@ const getManagerLeaderBoardDataFromDB = async () => {
       },
     },
     { $unwind: "$users" },
-    { $match: { "users.role": "manager" } },
+    {
+      $lookup: {
+        from: "leaderboards",
+        let: { contextId: "$contextId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$contextId", "$$contextId"],
+              },
+            },
+          },
+        ],
+        as: "contexts",
+      },
+    },
+    {
+      $match: {
+        "users.role": "manager",
+        "contexts.0": { $exists: true },
+      },
+    },
     {
       $lookup: {
         from: "questions",
@@ -82,7 +103,12 @@ const getManagerLeaderBoardDataFromDB = async () => {
         as: "questions",
       },
     },
-    { $unwind: "$questions" },
+    {
+      $unwind: "$users",
+    },
+    {
+      $unwind: "$questions",
+    },
     {
       $group: {
         _id: { userId: "$users._id" },
@@ -107,7 +133,28 @@ const getUsersLeaderboardDataFromDB = async () => {
       },
     },
     { $unwind: "$users" },
-    { $match: { "users.role": "user" } },
+    {
+      $lookup: {
+        from: "leaderboards",
+        let: { contextId: "$contextId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$contextId", "$$contextId"],
+              },
+            },
+          },
+        ],
+        as: "contexts",
+      },
+    },
+    {
+      $match: {
+        "users.role": "user",
+        "contexts.0": { $exists: true },
+      },
+    },
     {
       $lookup: {
         from: "questions",
@@ -116,7 +163,12 @@ const getUsersLeaderboardDataFromDB = async () => {
         as: "questions",
       },
     },
-    { $unwind: "$questions" },
+    {
+      $unwind: "$users",
+    },
+    {
+      $unwind: "$questions",
+    },
     {
       $group: {
         _id: { userId: "$users._id" },
