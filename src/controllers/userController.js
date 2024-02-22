@@ -73,9 +73,9 @@ const profile = catchAsync(async (req, res) => {
 });
 
 const updateProfile = catchAsync(async (req, res) => {
-  if (req?.file) {
-    req.body.image = createFileDetails("users", req?.file?.filename);
-  }
+  // if (req?.file) {
+  //   req.body.image = createFileDetails("users", req?.file?.filename);
+  // }
   const id = req.user.userId;
   console.log(id, req.body);
 
