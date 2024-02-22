@@ -204,6 +204,24 @@ const changeUserStatus = async (id, managerId, status) => {
   return result;
 };
 
+const changePasswordFromDB = async (userId, password) => {
+  const isExistUser = await User.findById(userId);
+  if (!isExistUser) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User Not Found");
+  }
+
+  const result = await User.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        password: password,
+        needPasswordChange: false,
+      },
+    },
+    { new: true }
+  );
+  return result;
+};
 module.exports = {
   addUser,
   addManager,
@@ -216,4 +234,5 @@ module.exports = {
   getManagerUsers,
   changeUserStatus,
   updateUserByManager,
+  changePasswordFromDB,
 };
