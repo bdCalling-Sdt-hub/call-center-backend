@@ -11,6 +11,7 @@ const {
   retriveAllManagerUsers,
   changeStatus,
   updateUser,
+  changePassword,
 } = require("../controllers/userController");
 const router = express.Router();
 const fs = require("fs");
@@ -59,5 +60,5 @@ router.patch(
 );
 router.patch("/update-password", auth("manager", "user"), updatePassword);
 router.patch("/change-status/:id", auth("manager"), changeStatus);
-
+router.patch("/change-password", auth("manager", "user"), changePassword);
 module.exports = router;

@@ -62,7 +62,7 @@ const userSignIn = async (userBody) => {
   const accessToken = jwt.sign(
     { userId: user._id, email: user.email, role: user.role },
     "secret2020",
-    { expiresIn: "12h" }
+    { expiresIn: "1d" }
   );
 
   return { user, accessToken };
@@ -89,7 +89,7 @@ const updateMyProfile = async (id, userBody) => {
       );
     }
   }
-  
+
   const result = await User.findByIdAndUpdate(id, userBody, {
     new: true,
   });
@@ -204,6 +204,24 @@ const changeUserStatus = async (id, managerId, status) => {
   return result;
 };
 
+const changePasswordFromDB = async (userId, password) => {
+  const isExistUser = await User.findById(userId);
+  if (!isExistUser) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User Not Found");
+  }
+
+  const result = await User.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        password: password,
+        needPasswordChange: false,
+      },
+    },
+    { new: true }
+  );
+  return result;
+};
 module.exports = {
   addUser,
   addManager,
@@ -216,4 +234,5 @@ module.exports = {
   getManagerUsers,
   changeUserStatus,
   updateUserByManager,
+  changePasswordFromDB,
 };

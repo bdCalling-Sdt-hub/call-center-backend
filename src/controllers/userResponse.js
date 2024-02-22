@@ -3,6 +3,7 @@ const {
   CalculateTotalScore,
   getManagerLeaderBoardDataFromDB,
   getUsersLeaderboardDataFromDB,
+  deleteAllResponsesFromDB,
 } = require("../services/userResponse.js");
 const catchAsync = require("../utils/catchAsync.js");
 const sendResponse = require("../utils/sendResponse.js");
@@ -45,10 +46,20 @@ const getUserLeaderBoardData = catchAsync(async (req, res) => {
     success: true,
   });
 });
+const deleteAllResponses = catchAsync(async (req, res) => {
+  const result = await deleteAllResponsesFromDB(req.params.id, req.user.userId);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "response deleted successfully",
+    success: true,
+  });
+});
 
 module.exports = {
   insertQuizAnswer,
   calculateScore,
   getManagerLeaderBoardData,
   getUserLeaderBoardData,
+  deleteAllResponses,
 };

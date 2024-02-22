@@ -15,6 +15,7 @@ const {
   getManagerUsers,
   changeUserStatus,
   updateMyProfile,
+  changePasswordFromDB,
 } = require("../services/userService");
 const sendResponse = require("../utils/sendResponse");
 const catchAsync = require("../utils/catchAsync");
@@ -151,6 +152,16 @@ const changeStatus = catchAsync(async (req, res) => {
     success: true,
   });
 });
+const changePassword = catchAsync(async (req, res) => {
+  const id = req.user.userId;
+  const result = await changePasswordFromDB(id, req.body.password);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "Password Changed Successfully",
+    success: true,
+  });
+});
 
 module.exports = {
   signUp,
@@ -164,4 +175,5 @@ module.exports = {
   retriveAllManagerUsers,
   changeStatus,
   updateUser,
+  changePassword,
 };

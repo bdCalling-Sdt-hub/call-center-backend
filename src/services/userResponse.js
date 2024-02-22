@@ -1,6 +1,9 @@
+const httpStatus = require("http-status");
+const AppError = require("../errors/AppError.js");
 const { Question } = require("../models/Quiz.js");
 const UserResponse = require("../models/UserResponses.js");
 const mongoose = require("mongoose");
+const LeaderBoard = require("../models/leaderBorad.js");
 const insertResponseintoDb = async (payload) => {
   const { questionId, answerId } = payload;
   const questionObjectId = new mongoose.Types.ObjectId(questionId);
@@ -70,7 +73,28 @@ const getManagerLeaderBoardDataFromDB = async () => {
       },
     },
     { $unwind: "$users" },
-    { $match: { "users.role": "manager" } },
+    {
+      $lookup: {
+        from: "leaderboards",
+        let: { contextId: "$contextId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$contextId", "$$contextId"],
+              },
+            },
+          },
+        ],
+        as: "contexts",
+      },
+    },
+    {
+      $match: {
+        "users.role": "manager",
+        "contexts.0": { $exists: true },
+      },
+    },
     {
       $lookup: {
         from: "questions",
@@ -79,18 +103,23 @@ const getManagerLeaderBoardDataFromDB = async () => {
         as: "questions",
       },
     },
-    { $unwind: "$questions" },
+    {
+      $unwind: "$users",
+    },
+    {
+      $unwind: "$questions",
+    },
     {
       $group: {
-        _id: "$questions.context",
+        _id: { userId: "$users._id" },
         score: { $sum: "$score" },
-        userDetails: { $push: "$users" },
-        questions: { $push: "$questions" },
+        userDetails: { $first: "$users" },
       },
     },
 
     { $sort: { score: -1 } },
   ]);
+
   return result;
 };
 const getUsersLeaderboardDataFromDB = async () => {
@@ -104,23 +133,95 @@ const getUsersLeaderboardDataFromDB = async () => {
       },
     },
     { $unwind: "$users" },
-    { $match: { "users.role": "user" } },
     {
-      $group: {
-        _id: null,
-        score: { $sum: "$score" },
-        userDetails: { $push: "$users" },
+      $lookup: {
+        from: "leaderboards",
+        let: { contextId: "$contextId" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$contextId", "$$contextId"],
+              },
+            },
+          },
+        ],
+        as: "contexts",
       },
     },
-    { $unwind: "$userDetails" },
+    {
+      $match: {
+        "users.role": "user",
+        "contexts.0": { $exists: true },
+      },
+    },
+    {
+      $lookup: {
+        from: "questions",
+        localField: "questionId",
+        foreignField: "_id",
+        as: "questions",
+      },
+    },
+    {
+      $unwind: "$users",
+    },
+    {
+      $unwind: "$questions",
+    },
+    {
+      $group: {
+        _id: { userId: "$users._id" },
+        score: { $sum: "$score" },
+        userDetails: { $first: "$users" },
+      },
+    },
+
     { $sort: { score: -1 } },
   ]);
   return result;
 };
 
+const deleteAllResponsesFromDB = async (contextId, userId) => {
+  console.log(contextId);
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    const deleteAllResponses = await UserResponse.deleteMany(
+      {
+        userId: userId,
+        contextId: contextId,
+      },
+      { session }
+    );
+
+    if (!deleteAllResponses.acknowledged) {
+      throw new AppError(httpStatus.BAD_REQUEST, "something went wrong");
+    }
+    const deleteLeaderBoard = await LeaderBoard.deleteMany(
+      {
+        userId: userId,
+        contextId: contextId,
+      },
+      { session }
+    );
+    if (!deleteLeaderBoard.acknowledged) {
+      throw new AppError(httpStatus.BAD_REQUEST, "something went wrong");
+    }
+    await session.commitTransaction();
+    session.endSession();
+    return deleteAllResponses[0];
+  } catch (err) {
+    console.log(err);
+    await session.abortTransaction();
+    session.endSession();
+    throw new Error(err);
+  }
+};
 module.exports = {
   insertResponseintoDb,
   CalculateTotalScore,
   getManagerLeaderBoardDataFromDB,
   getUsersLeaderboardDataFromDB,
+  deleteAllResponsesFromDB,
 };

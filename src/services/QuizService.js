@@ -255,6 +255,7 @@ const getManagerLeaderboard = async (managerId) => {
   return rankedLeaderboard;
 };
 const getRandomContextFromDb = async (userId) => {
+  console.log(userId)
   const completedContextId = await LeaderBoard.distinct("contextId", {
     userId,
   });
