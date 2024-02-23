@@ -175,18 +175,21 @@ const updateUserPassword = async (id, payload) => {
   return result;
 };
 const getManagerUsers = async (query) => {
-  const userQuery = new QueryBuilder(User.find(), query)
-    .search()
-    .filter()
-    .paginate()
-    .sort()
-    .fields();
-  const result = await userQuery.modelQuery;
-  const meta = await userQuery.meta();
-  return {
-    data: result,
-    meta,
-  };
+  // const userQuery = new QueryBuilder(User.find(), query)
+  //   .search()
+  //   .filter()
+  //   .paginate()
+  //   .sort()
+  //   .fields();
+  // const result = await userQuery.modelQuery;
+  // const meta = await userQuery.meta();
+  // console.log(meta);
+  // return {
+  //   data: result,
+  //   meta,
+  // };
+  const result = await User.find(query);
+  return result;
 };
 
 const changeUserStatus = async (id, managerId, status) => {
@@ -222,6 +225,58 @@ const changePasswordFromDB = async (userId, password) => {
   );
   return result;
 };
+const forgetPassword = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "User Not Exist With This Email"
+    );
+  }
+  const accessToken = jwt.sign(
+    { userId: user._id, email: user.email, role: user.role },
+    "secret2020",
+    { expiresIn: "1h" }
+  );
+
+  const resetUiLink = `192.168.10.101:3000/reset-password?email=${user?.email}&token=${accessToken}`;
+  if (resetUiLink) {
+    await sendEmail(
+      email,
+      "Your Reset Password Link",
+      "Your Reset Password Link",
+      resetUiLink
+    );
+  }
+  return null;
+};
+const resetPassword = async (token, payload) => {
+  console.log("token", token);
+  const { email, password } = payload;
+  if (!token) {
+    throw new AppError(401, "you are not authorized!");
+  }
+  let decode;
+  try {
+    decode = jwt.verify(token, "secret2020");
+  } catch (err) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "unauthorized");
+  }
+  if (decode?.email !== email) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Something Went Wrong. Please Provide Valid Email"
+    );
+  }
+  const result = await User.findByIdAndUpdate(
+    decode?.userId,
+    {
+      $set: { password: password },
+    },
+    { new: true }
+  );
+  return result;
+};
 module.exports = {
   addUser,
   addManager,
@@ -235,4 +290,6 @@ module.exports = {
   changeUserStatus,
   updateUserByManager,
   changePasswordFromDB,
+  forgetPassword,
+  resetPassword,
 };

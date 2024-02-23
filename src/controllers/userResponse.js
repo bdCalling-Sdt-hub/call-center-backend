@@ -29,7 +29,7 @@ const calculateScore = catchAsync(async (req, res) => {
   });
 });
 const getManagerLeaderBoardData = catchAsync(async (req, res) => {
-  const result = await getManagerLeaderBoardDataFromDB();
+  const result = await getManagerLeaderBoardDataFromDB(req.user.userId);
   sendResponse(res, {
     statusCode: 200,
     data: result,

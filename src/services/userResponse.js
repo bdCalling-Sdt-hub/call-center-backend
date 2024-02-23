@@ -62,7 +62,8 @@ const CalculateTotalScore = async (contextId, userId) => {
   ]);
   return result[0];
 };
-const getManagerLeaderBoardDataFromDB = async () => {
+const getManagerLeaderBoardDataFromDB = async (managerId) => {
+  const managerObjectId = new mongoose.Types.ObjectId(managerId);
   const result = await UserResponse.aggregate([
     {
       $lookup: {
@@ -91,7 +92,7 @@ const getManagerLeaderBoardDataFromDB = async () => {
     },
     {
       $match: {
-        "users.role": "manager",
+        "users.managerId": managerObjectId,
         "contexts.0": { $exists: true },
       },
     },

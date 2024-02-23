@@ -16,6 +16,8 @@ const {
   changeUserStatus,
   updateMyProfile,
   changePasswordFromDB,
+  forgetPassword,
+  resetPassword,
 } = require("../services/userService");
 const sendResponse = require("../utils/sendResponse");
 const catchAsync = require("../utils/catchAsync");
@@ -113,11 +115,11 @@ const allUsers = catchAsync(async (req, res) => {
 
 const retriveAllManagerUsers = catchAsync(async (req, res) => {
   req.query.managerId = req.user.userId;
+  console.log(req.user.userId, "hitted");
   const result = await getManagerUsers(req.query);
   sendResponse(res, {
     statusCode: 200,
-    data: result?.data,
-    meta: result?.meta,
+    data: result,
     message: "Users Retrieve successfully",
     success: true,
   });
@@ -162,6 +164,25 @@ const changePassword = catchAsync(async (req, res) => {
     success: true,
   });
 });
+const forgetUserPassword = catchAsync(async (req, res) => {
+  const result = await forgetPassword(req.body.email);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "Reset Password Link Successfully Sent Your Email",
+    success: true,
+  });
+});
+const resetUserPassword = catchAsync(async (req, res) => {
+  const token = req?.headers?.authorization?.split(" ")[1];
+  const result = await resetPassword(token, req?.body);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "Password Reset Successfully",
+    success: true,
+  });
+});
 
 module.exports = {
   signUp,
@@ -176,4 +197,6 @@ module.exports = {
   changeStatus,
   updateUser,
   changePassword,
+  forgetUserPassword,
+  resetUserPassword,
 };
