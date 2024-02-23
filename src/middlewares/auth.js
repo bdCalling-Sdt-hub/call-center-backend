@@ -72,7 +72,7 @@ const auth = (...userRoles) => {
     } catch (err) {
       throw new AppError(httpStatus.UNAUTHORIZED, "unauthorized");
     }
-    console.log(decode);
+
     const { role, userId, email } = decode;
     // const isUserExist = User.isUserExist(email);
     const isIdExit = await User.findById(userId);
