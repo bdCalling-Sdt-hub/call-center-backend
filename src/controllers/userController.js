@@ -30,7 +30,7 @@ const createManager = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: 201,
     data: result,
-    message: "Manager added successfully",
+    message: "Signup successful",
     success: true,
   });
 });
@@ -47,7 +47,7 @@ const signUp = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: 201,
     data: result,
-    message: "User added successfully",
+    message: "Signup successful",
     success: true,
   });
 });
@@ -58,7 +58,7 @@ const signIn = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: 200,
     data: result,
-    message: "Sign In successfully",
+    message: "Signed in successfully.",
     success: true,
   });
 });
@@ -85,7 +85,7 @@ const updateProfile = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: 200,
     data: result,
-    message: "User Update successfully",
+    message: "User Updated successfully",
     success: true,
   });
 });
@@ -98,7 +98,7 @@ const updateUser = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: 200,
     data: result,
-    message: "User Update successfully",
+    message: "User Updated successfully",
     success: true,
   });
 });
@@ -108,7 +108,7 @@ const allUsers = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: 200,
     data: result,
-    message: "Users Retrieve successfully",
+    message: "Users Retrieved successfully",
     success: true,
   });
 });
@@ -120,7 +120,7 @@ const retriveAllManagerUsers = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: 200,
     data: result,
-    message: "Users Retrieve successfully",
+    message: "Users Retrieved successfully",
     success: true,
   });
 });
@@ -179,7 +179,7 @@ const resetUserPassword = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: 200,
     data: result,
-    message: "Password Reset Successfully",
+    message: "Password Reseted Successfully",
     success: true,
   });
 });
