@@ -18,7 +18,6 @@ mongoose.connect(
   `mongodb+srv://call-center:08oJUQ0Q9h2svmaS@cluster0.mordayw.mongodb.net/call-center?retryWrites=true&w=majority`,
   {}
 );
-console.log(process.env.MONGODB_CONNECTION);
 
 //making public folder static for publicly access
 app.use(express.static("public"));
@@ -34,7 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 // Enable CORS
 app.use(
   cors({
-    origin: "*",
+    origin: "165.227.211.138",
     //[
     //   process.env.ALLOWED_CLIENT_URL_DASHBOARD,
     //   process.env.ALLOWED_CLIENT_URL_WEB,
