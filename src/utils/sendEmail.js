@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 async function sendEmail(receiverGmail, subject, text, html) {
   try {
     const info = await transporter.sendMail({
-      from: "nurmdopu428@gmail.com", // sender address
+      from: "nurmdopu529@gmail.com", // sender address
       to: receiverGmail, // list of receivers
       subject: subject, // Subject line
       text: text, // plain text body
