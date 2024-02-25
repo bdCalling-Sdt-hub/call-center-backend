@@ -97,7 +97,7 @@ const getProfile = async (id) => {
 };
 
 const updateMyProfile = async (id, userBody) => {
-  const { email } = userBody;
+  const { email, userName } = userBody;
   const user = await User.findById(id);
 
   if (!user) {
@@ -111,15 +111,6 @@ const updateMyProfile = async (id, userBody) => {
         "User Already Exist With This Same Email. Try Another One"
       );
     }
-  }
-  const checkDuplicateUserName = await User.findOne({
-    userName: new RegExp("^" + userName + "$", "i"),
-  });
-  if (checkDuplicateUserName) {
-    throw new AppError(
-      httpStatus.CONFLICT,
-      "This username is already in use. Please choose a different one."
-    );
   }
 
   const result = await User.findByIdAndUpdate(id, userBody, {
@@ -146,15 +137,7 @@ const updateUserByManager = async (id, userBody) => {
       );
     }
   }
-  const checkDuplicateUserName = await User.findOne({
-    userName: new RegExp("^" + userName + "$", "i"),
-  });
-  if (checkDuplicateUserName) {
-    throw new AppError(
-      httpStatus.CONFLICT,
-      "This username is already in use. Please choose a different one."
-    );
-  }
+
   const result = await User.findByIdAndUpdate(id, userBody, {
     new: true,
   });
