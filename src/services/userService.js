@@ -239,7 +239,7 @@ const forgetPassword = async (email) => {
     { expiresIn: "1h" }
   );
 
-  const resetUiLink = `192.168.10.101:3000/reset-password?email=${user?.email}&token=${accessToken}`;
+  const resetUiLink = `http://165.227.211.138:3001/reset-password?email=${user?.email}&token=${accessToken}`;
   if (resetUiLink) {
     await sendEmail(
       email,
