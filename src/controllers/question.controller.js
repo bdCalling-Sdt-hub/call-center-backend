@@ -18,7 +18,8 @@ const insertNewQuestion = catchAsync(async (req, res) => {
   });
 });
 const getTotalQuestions = catchAsync(async (req, res) => {
-  const result = await getTotalQuestionsFromDB(req.params.id);
+  const userId = req.user.userId;
+  const result = await getTotalQuestionsFromDB(req.params.id, userId);
   sendResponse(res, {
     statusCode: 200,
     data: result,
@@ -47,7 +48,7 @@ const deleteQuestion = catchAsync(async (req, res) => {
 
 const findRandomQuestions = catchAsync(async (req, res) => {
   const userId = req.user.userId;
-  console.log(userId);
+
   const result = await findRandomQuestionsFromDb(req.params.contextId, userId);
   sendResponse(res, {
     statusCode: 200,
