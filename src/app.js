@@ -34,6 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: "165.227.211.138",
+    origin: "http://localhost:3001",
     //[
     //   process.env.ALLOWED_CLIENT_URL_DASHBOARD,
     //   process.env.ALLOWED_CLIENT_URL_WEB,
