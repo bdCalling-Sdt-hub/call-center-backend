@@ -8,11 +8,17 @@ const unlinkImage = require("../common/image/unlinkImage.js");
 const sendEmail = require("../utils/sendEmail.js");
 
 const addManager = async (userBody) => {
-  const { name, userName, email, password, role } = userBody;
-  // Check if the user already exists
+  const { userName, email } = userBody;
+
   const userExist = await User.findOne({ email });
   if (userExist) {
     throw new AppError(httpStatus.CONFLICT, "Manager already exists");
+  }
+  if (userName.toLowerCase() === userExist?.userName.toLowerCase()) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "This username is already in use. Please choose a different one."
+    );
   }
   // Create the user in the database
   const user = await User.create(userBody);
