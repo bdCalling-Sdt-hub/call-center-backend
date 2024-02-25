@@ -14,7 +14,10 @@ const addManager = async (userBody) => {
   if (userExist) {
     throw new AppError(httpStatus.CONFLICT, "Manager already exists");
   }
-  if (userName.toLowerCase() === userExist?.userName.toLowerCase()) {
+  const checkDuplicateUserName = await User.findOne({
+    userName: new RegExp("^" + userName + "$", "i"),
+  });
+  if (checkDuplicateUserName) {
     throw new AppError(
       httpStatus.CONFLICT,
       "This username is already in use. Please choose a different one."
@@ -34,6 +37,15 @@ const addUser = async (userBody) => {
     throw new AppError(
       httpStatus.CONFLICT,
       "User already exists with this same email"
+    );
+  }
+  const checkDuplicateUserName = await User.findOne({
+    userName: new RegExp("^" + userName + "$", "i"),
+  });
+  if (checkDuplicateUserName) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "This username is already in use. Please choose a different one."
     );
   }
   // Create the user in the database
@@ -87,7 +99,7 @@ const getProfile = async (id) => {
 const updateMyProfile = async (id, userBody) => {
   const { email } = userBody;
   const user = await User.findById(id);
-  console.log(user);
+
   if (!user) {
     throw new AppError(httpStatus.BAD_REQUEST, "User Not Found");
   }
@@ -99,6 +111,15 @@ const updateMyProfile = async (id, userBody) => {
         "User Already Exist With This Same Email. Try Another One"
       );
     }
+  }
+  const checkDuplicateUserName = await User.findOne({
+    userName: new RegExp("^" + userName + "$", "i"),
+  });
+  if (checkDuplicateUserName) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "This username is already in use. Please choose a different one."
+    );
   }
 
   const result = await User.findByIdAndUpdate(id, userBody, {
@@ -125,11 +146,18 @@ const updateUserByManager = async (id, userBody) => {
       );
     }
   }
-  console.log(userBody);
+  const checkDuplicateUserName = await User.findOne({
+    userName: new RegExp("^" + userName + "$", "i"),
+  });
+  if (checkDuplicateUserName) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "This username is already in use. Please choose a different one."
+    );
+  }
   const result = await User.findByIdAndUpdate(id, userBody, {
     new: true,
   });
-  console.log("result", result);
 
   if (userBody?.image && user?.image) {
     unlinkImage(user?.image);
