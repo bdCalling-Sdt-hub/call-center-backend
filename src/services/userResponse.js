@@ -93,7 +93,7 @@ const getManagerLeaderBoardDataFromDB = async (managerId) => {
     {
       $match: {
         // if we want to find managers users data then uncomment this line=====>
-        // "user.managerId":managerObjectId
+        // "user.managerId":managerObjectId,
 
         // // if we want to find managers users data then comment this  this line============>
         "users.role": "manager",
