@@ -30,7 +30,7 @@ const addManager = async (userBody) => {
 };
 
 const addUser = async (userBody) => {
-  const { email } = userBody;
+  const { email, userName } = userBody;
   // Check if the user already exists
   const userExist = await User.findOne({ email });
   if (userExist) {
