@@ -92,7 +92,7 @@ const getManagerLeaderBoardDataFromDB = async (managerId) => {
     },
     {
       $match: {
-        "users.managerId": managerObjectId,
+        "users.role": "manager",
         "contexts.0": { $exists: true },
       },
     },

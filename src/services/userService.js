@@ -36,8 +36,13 @@ const addUser = async (userBody) => {
     await sendEmail(
       userBody?.email,
       "Your Password is",
-      "",
-      userBody?.password
+      "Your One Time Password is",
+      `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">
+        <p style="font-size: 24px; font-weight: bold; color: #2ecc71; text-align: center;">${userBody?.password}</p>
+        <p style="font-size: 14px; color: #888;">Please do not share this code with anyone for security reasons.</p>
+      </div>
+    `
     );
   }
   return user;
@@ -245,7 +250,15 @@ const forgetPassword = async (email) => {
       email,
       "Your Reset Password Link",
       "Your Reset Password Link",
-      resetUiLink
+      `
+      <div style="text-align: center; padding: 20px;">
+  <p style="font-size: 18px;">This link is only valid for 1 hour. Please reset your password within this time.</p>
+  <a href="${resetUiLink}" target="_blank" style="display: inline-block; padding: 10px 20px; margin: 20px 0; background-color: #54C999; color: #fff; text-decoration: none; border-radius: 5px;">Reset Password</a>
+  <p style="font-size: 14px; color: #888;">For security reasons, please do not share this link with anyone.</p>
+</div>
+
+    
+    `
     );
   }
   return null;
