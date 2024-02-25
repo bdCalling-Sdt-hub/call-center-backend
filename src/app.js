@@ -31,18 +31,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Enable CORS
-app.use(
-  cors({
-    origin: "http://64.23.212.196:3001",
-    origin: "http://localhost:3001",
-    //[
-    //   process.env.ALLOWED_CLIENT_URL_DASHBOARD,
-    //   process.env.ALLOWED_CLIENT_URL_WEB,
-    //   process.env.ALLOWED_CLIENT_URL_SUB_DASHBOARD
-    // ],
-    optionsSuccessStatus: 200,
-  })
-);
+const corsOptions = {
+  origin: ["165.227.211.138", "http://65.227.211.138:3001"],
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 //initilizing API routes
 app.use("/api/users", userRouter);
