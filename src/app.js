@@ -14,10 +14,6 @@ require("dotenv").config();
 const app = express();
 
 // Connect to the MongoDB database
-mongoose.connect(
-  `mongodb+srv://call-center:08oJUQ0Q9h2svmaS@cluster0.mordayw.mongodb.net/call-center?retryWrites=true&w=majority`,
-  {}
-);
 
 //making public folder static for publicly access
 app.use(express.static("public"));

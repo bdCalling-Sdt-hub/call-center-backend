@@ -1,7 +1,8 @@
 const app = require("./app");
+const mongoose = require("mongoose");
 require("dotenv").config();
-
+mongoose.connect(process.env.MONGODB_CONNECTION, {});
 const port = process.env.PORT || 3000;
-app.listen(port, "192.168.10.3", () => {
-  console.log(`Call Center Server is listening on 64.23.212.196:${port}`);
+app.listen(port, "", () => {
+  console.log(`Call Center Server is listening on ${port}`);
 });
