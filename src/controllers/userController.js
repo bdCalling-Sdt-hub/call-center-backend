@@ -18,6 +18,7 @@ const {
   changePasswordFromDB,
   forgetPassword,
   resetPassword,
+  deleteUserFromDb,
 } = require("../services/userService");
 const sendResponse = require("../utils/sendResponse");
 const catchAsync = require("../utils/catchAsync");
@@ -184,6 +185,15 @@ const resetUserPassword = catchAsync(async (req, res) => {
     success: true,
   });
 });
+const deleteUser = catchAsync(async (req, res) => {
+  const result = await deleteUserFromDb(req.params.id);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "user deleted Successfully",
+    success: true,
+  });
+});
 
 module.exports = {
   signUp,
@@ -200,4 +210,5 @@ module.exports = {
   changePassword,
   forgetUserPassword,
   resetUserPassword,
+  deleteUser,
 };

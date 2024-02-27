@@ -14,6 +14,7 @@ const {
   changePassword,
   forgetUserPassword,
   resetUserPassword,
+  deleteUser,
 } = require("../controllers/userController");
 const router = express.Router();
 const fs = require("fs");
@@ -66,4 +67,5 @@ router.patch("/change-password", auth("manager", "user"), changePassword);
 router.patch("/change-password", auth("manager", "user"), changePassword);
 router.patch("/forget-password", forgetUserPassword);
 router.patch("/reset-password", resetUserPassword);
+router.delete("/:id", auth("manager"), deleteUser);
 module.exports = router;

@@ -13,6 +13,7 @@ const {
   managerQuizScores,
   insertQuiz,
   findARandomContext,
+  deleteQuiz,
 } = require("../controllers/quizController");
 const auth = require("../middlewares/auth");
 const router = express.Router();
@@ -62,4 +63,5 @@ router.get(
   auth("manager"),
   managerWiseScores
 );
+router.delete("/:id", auth("manager", "user"), deleteQuiz);
 module.exports = router;
