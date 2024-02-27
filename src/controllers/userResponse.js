@@ -4,6 +4,7 @@ const {
   getManagerLeaderBoardDataFromDB,
   getUsersLeaderboardDataFromDB,
   deleteAllResponsesFromDB,
+  resetAllSessionFromDb,
 } = require("../services/userResponse.js");
 const catchAsync = require("../utils/catchAsync.js");
 const sendResponse = require("../utils/sendResponse.js");
@@ -55,6 +56,15 @@ const deleteAllResponses = catchAsync(async (req, res) => {
     success: true,
   });
 });
+const resetSession = catchAsync(async (req, res) => {
+  const result = await resetAllSessionFromDb(req.user.userId);
+  sendResponse(res, {
+    statusCode: 200,
+    data: result,
+    message: "Session Deleted Successfully",
+    success: true,
+  });
+});
 
 module.exports = {
   insertQuizAnswer,
@@ -62,4 +72,5 @@ module.exports = {
   getManagerLeaderBoardData,
   getUserLeaderBoardData,
   deleteAllResponses,
+  resetSession,
 };

@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema(
       required: [true, "User Name is must be given"],
       trim: true,
     },
+    teamId: {
+      type: String,
+      required: [true, "Team Id is required"],
+    },
     email: {
       type: String,
       required: [true, "Email is required"],

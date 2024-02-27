@@ -6,10 +6,12 @@ const jwt = require("jsonwebtoken");
 const QueryBuilder = require("../builder/QueryBuilder");
 const unlinkImage = require("../common/image/unlinkImage.js");
 const sendEmail = require("../utils/sendEmail.js");
+const { generateNewTeam } = require("../utils/Team.utils.js");
 
 const addManager = async (userBody) => {
   const { userName, email } = userBody;
-
+  const teamId = await generateNewTeam();
+  userBody.teamId = teamId;
   const userExist = await User.findOne({ email });
   if (userExist) {
     throw new AppError(httpStatus.CONFLICT, "Manager already exists");
@@ -23,7 +25,6 @@ const addManager = async (userBody) => {
       "This username is already in use. Please choose a different one."
     );
   }
-  // Create the user in the database
   const user = await User.create(userBody);
 
   return user;
@@ -83,7 +84,12 @@ const userSignIn = async (userBody) => {
 
   // Token, set the Cokkie
   const accessToken = jwt.sign(
-    { userId: user._id, email: user.email, role: user.role },
+    {
+      userId: user._id,
+      email: user.email,
+      role: user.role,
+      teamId: user?.teamId,
+    },
     "secret2020",
     { expiresIn: "1d" }
   );

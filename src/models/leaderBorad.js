@@ -7,10 +7,20 @@ const LeaderBoardSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    contextId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Context",
+    contextId: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Context",
+        required: true,
+      },
+    ],
+    teamId: {
+      type: String,
       required: true,
+    },
+    totalScores: {
+      type: Number,
+      default: 0,
     },
   },
   {

@@ -27,6 +27,7 @@ const insertResponseintoDb = async (payload) => {
   } else {
     payload.score = 1;
   }
+
   const result = await UserResponse.create(payload);
   return result;
 };
@@ -188,7 +189,6 @@ const getUsersLeaderboardDataFromDB = async () => {
 };
 
 const deleteAllResponsesFromDB = async (contextId, userId) => {
-  console.log(contextId);
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -223,10 +223,37 @@ const deleteAllResponsesFromDB = async (contextId, userId) => {
     throw new Error(err);
   }
 };
+
+const resetAllSessionFromDb = async (userId) => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    const result = await UserResponse.deleteMany({ userId }, { session });
+    if (!result?.acknowledged) {
+      throw new AppError(httpStatus.BAD_REQUEST, "something went wrong");
+    }
+    const deleteAllContextsFromLeaderboard = await LeaderBoard.findOneAndUpdate(
+      { userId },
+      { $set: { contextId: [] } },
+      { session }
+    );
+    console.log(deleteAllContextsFromLeaderboard);
+    await session.commitTransaction();
+    session.endSession();
+    return result;
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    throw new Error(err);
+  }
+};
+
+const resetContextWiseSession = async (userId) => {};
 module.exports = {
   insertResponseintoDb,
   CalculateTotalScore,
   getManagerLeaderBoardDataFromDB,
   getUsersLeaderboardDataFromDB,
   deleteAllResponsesFromDB,
+  resetAllSessionFromDb,
 };
