@@ -5,14 +5,14 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: "nurmdopu428@gmail.com",
-    pass: "fpel vaen ickk tvme",
+    user: process.env.NODEMAILER_HOST_EMAIL,
+    pass: process.env.NODEMAILER_HOST_PASS,
   },
 });
 async function sendEmail(receiverGmail, subject, text, html) {
   try {
     const info = await transporter.sendMail({
-      from: "nurmdopu428@gmail.com", // sender address
+      from: process.env.NODEMAILER_HOST_EMAIL, // sender address
       to: receiverGmail, // list of receivers
       subject: subject, // Subject line
       text: text, // plain text body

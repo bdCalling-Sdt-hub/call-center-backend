@@ -14,10 +14,6 @@ require("dotenv").config();
 const app = express();
 
 // Connect to the MongoDB database
-mongoose.connect(
-  `mongodb+srv://call-center:08oJUQ0Q9h2svmaS@cluster0.mordayw.mongodb.net/call-center?retryWrites=true&w=majority`,
-  {}
-);
 
 //making public folder static for publicly access
 app.use(express.static("public"));
@@ -31,18 +27,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Enable CORS
-app.use(
-  cors({
-    origin: "http://64.23.212.196:3001",
-    origin: "http://localhost:3001",
-    //[
-    //   process.env.ALLOWED_CLIENT_URL_DASHBOARD,
-    //   process.env.ALLOWED_CLIENT_URL_WEB,
-    //   process.env.ALLOWED_CLIENT_URL_SUB_DASHBOARD
-    // ],
-    optionsSuccessStatus: 200,
-  })
-);
+const corsOptions = {
+  origin: ["http://localhost:3001", "http://64.23.212.196:3001"],
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 //initilizing API routes
 app.use("/api/users", userRouter);

@@ -255,17 +255,16 @@ const getManagerLeaderboard = async (managerId) => {
   return rankedLeaderboard;
 };
 const getRandomContextFromDb = async (userId) => {
-  console.log(userId)
-  const completedContextId = await LeaderBoard.distinct("contextId", {
-    userId,
-  });
-
+  const retriveContextId = await LeaderBoard.findOne({ userId }).select(
+    "contextId"
+  );
+  const contextIdsArray = retriveContextId?.contextId || [];
   const result = await Quiz.aggregate([
-    { $match: { _id: { $nin: completedContextId } } },
+    { $match: { _id: { $nin: contextIdsArray } } },
     { $sample: { size: 1 } },
   ]);
 
-  return result[0];
+  return result[0] ? result[0] : null;
 };
 
 module.exports = {

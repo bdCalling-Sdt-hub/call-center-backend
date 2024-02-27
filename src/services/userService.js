@@ -6,28 +6,47 @@ const jwt = require("jsonwebtoken");
 const QueryBuilder = require("../builder/QueryBuilder");
 const unlinkImage = require("../common/image/unlinkImage.js");
 const sendEmail = require("../utils/sendEmail.js");
+const { generateNewTeam } = require("../utils/Team.utils.js");
 
 const addManager = async (userBody) => {
-  const { name, userName, email, password, role } = userBody;
-  // Check if the user already exists
+  const { userName, email } = userBody;
+  const teamId = await generateNewTeam();
+  userBody.teamId = teamId;
   const userExist = await User.findOne({ email });
   if (userExist) {
     throw new AppError(httpStatus.CONFLICT, "Manager already exists");
   }
-  // Create the user in the database
+  const checkDuplicateUserName = await User.findOne({
+    userName: new RegExp("^" + userName + "$", "i"),
+  });
+  if (checkDuplicateUserName) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "This username is already in use. Please choose a different one."
+    );
+  }
   const user = await User.create(userBody);
 
   return user;
 };
 
 const addUser = async (userBody) => {
-  const { email } = userBody;
+  const { email, userName } = userBody;
   // Check if the user already exists
   const userExist = await User.findOne({ email });
   if (userExist) {
     throw new AppError(
       httpStatus.CONFLICT,
       "User already exists with this same email"
+    );
+  }
+  const checkDuplicateUserName = await User.findOne({
+    userName: new RegExp("^" + userName + "$", "i"),
+  });
+  if (checkDuplicateUserName) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "This username is already in use. Please choose a different one."
     );
   }
   // Create the user in the database
@@ -65,7 +84,12 @@ const userSignIn = async (userBody) => {
 
   // Token, set the Cokkie
   const accessToken = jwt.sign(
-    { userId: user._id, email: user.email, role: user.role },
+    {
+      userId: user._id,
+      email: user.email,
+      role: user.role,
+      teamId: user?.teamId,
+    },
     "secret2020",
     { expiresIn: "1d" }
   );
@@ -79,9 +103,9 @@ const getProfile = async (id) => {
 };
 
 const updateMyProfile = async (id, userBody) => {
-  const { email } = userBody;
+  const { email, userName } = userBody;
   const user = await User.findById(id);
-  console.log(user);
+
   if (!user) {
     throw new AppError(httpStatus.BAD_REQUEST, "User Not Found");
   }
@@ -119,11 +143,10 @@ const updateUserByManager = async (id, userBody) => {
       );
     }
   }
-  console.log(userBody);
+
   const result = await User.findByIdAndUpdate(id, userBody, {
     new: true,
   });
-  console.log("result", result);
 
   if (userBody?.image && user?.image) {
     unlinkImage(user?.image);

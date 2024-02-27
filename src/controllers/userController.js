@@ -37,17 +37,18 @@ const createManager = catchAsync(async (req, res) => {
 
 //Sign up
 const signUp = catchAsync(async (req, res) => {
-  const { userId, role } = req.user;
+  const { userId, role, teamId } = req.user;
   if (role === "manager" && userId) {
     req.body.managerId = userId;
     req.body.password = generateRandomPassword();
     req.body.needPasswordChange = true;
+    req.body.teamId = teamId;
   }
   const result = await addUser(req.body);
   sendResponse(res, {
     statusCode: 201,
     data: result,
-    message: "Signup successful",
+    message: "User Created Successfully",
     success: true,
   });
 });

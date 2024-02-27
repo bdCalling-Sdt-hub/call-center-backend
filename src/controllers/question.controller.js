@@ -48,7 +48,7 @@ const deleteQuestion = catchAsync(async (req, res) => {
 
 const findRandomQuestions = catchAsync(async (req, res) => {
   const userId = req.user.userId;
-
+  console.log(req.params.contextId, "hittedcontext id");
   const result = await findRandomQuestionsFromDb(req.params.contextId, userId);
   sendResponse(res, {
     statusCode: 200,
