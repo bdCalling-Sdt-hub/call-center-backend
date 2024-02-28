@@ -313,6 +313,12 @@ const resetPassword = async (token, payload) => {
   );
   return result;
 };
+
+const deleteUserFromDb = async (id) => {
+  const result = await User.findOneAndDelete(id);
+  return result;
+};
+
 module.exports = {
   addUser,
   addManager,
@@ -328,4 +334,5 @@ module.exports = {
   changePasswordFromDB,
   forgetPassword,
   resetPassword,
+  deleteUserFromDb,
 };

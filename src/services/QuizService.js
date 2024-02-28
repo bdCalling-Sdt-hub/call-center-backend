@@ -267,6 +267,25 @@ const getRandomContextFromDb = async (userId) => {
   return result[0] ? result[0] : null;
 };
 
+const deleteQuizFromDb = async (contextId) => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    const deletecontext = await Quiz.findByIdAndDelete(contextId, { session });
+
+    const deletequestions = await Question.deleteMany({
+      context: contextId,
+    });
+    await session.commitTransaction();
+    session.endSession();
+
+    return deletecontext;
+  } catch (err) {
+    await session.abortTransaction();
+    session.endSession();
+    throw new Error(err);
+  }
+};
 module.exports = {
   insertQuizIntoDB,
   getAllQuizs,
@@ -279,4 +298,5 @@ module.exports = {
   getUserLeaderboard,
   getManagerLeaderboard,
   getRandomContextFromDb,
+  deleteQuizFromDb,
 };
